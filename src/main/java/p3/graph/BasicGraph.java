@@ -3,7 +3,6 @@ package p3.graph;
 import p3.SetUtils;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -14,17 +13,10 @@ import java.util.stream.Collectors;
  * @param <N>
  */
 public class BasicGraph<N> implements Graph<N> {
-
-    /**
-     * A map from nodes to the edges that are adjacent to them.
-     * If a node has no adjacent edges, it is mapped to an empty set.
-     */
-    protected final Map<N, Set<Edge<N>>> backing;
-
     /**
      * The nodes in this graph.
      */
-    protected final Set<N> nodes;
+    protected final Set<Node<N>> nodes;
 
     /**
      * The edges in this graph.
@@ -45,43 +37,22 @@ public class BasicGraph<N> implements Graph<N> {
      * @param edges the edges.
      */
     public BasicGraph(Set<N> nodes, Set<Edge<N>> edges) {
-        backing = nodes.stream()
-            .map(n -> Map.entry(n, edges.stream()
-                .filter(e -> Objects.equals(e.from(), n))
-                .collect(Collectors.toUnmodifiableSet())))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Set<Node<N>> nodesWithEdges = nodes.stream()
+            .map(n -> new Node<>(edges.stream().filter(d -> d.from().equals(n)).collect(Collectors.toSet())))
+            .collect(Collectors.toSet());
 
-        this.nodes = SetUtils.immutableCopyOf(nodes);
+        this.nodes = SetUtils.immutableCopyOf(nodesWithEdges);
         this.edges = SetUtils.immutableCopyOf(edges);
     }
 
     @Override
-    public Set<N> getNodes() {
+    public Set<Node<N>> getNodes() {
         return nodes;
     }
 
     @Override
     public Set<Edge<N>> getEdges() {
         return edges;
-    }
-
-    @Override
-    public Set<Edge<N>> getAdjacentEdges(N node) {
-        Set<Edge<N>> result = backing.get(node);
-        if (result == null) {
-            throw new IllegalArgumentException("Node not found: " + node);
-        }
-        return result;
-    }
-
-    @Override
-    public MutableGraph<N> toMutableGraph() {
-        return MutableGraph.of(nodes, edges);
-    }
-
-    @Override
-    public Graph<N> toGraph() {
-        return this;
     }
 
     /**

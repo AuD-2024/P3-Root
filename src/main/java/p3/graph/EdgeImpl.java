@@ -4,8 +4,8 @@ import java.util.Objects;
 
 /**
  * A basic implementation of an {@link Edge}.
- * @param a The first node in the edge.
- * @param b The second node in the edge.
+ * @param from The first node in the edge.
+ * @param to The second node in the edge.
  * @param weight The weight of the edge.
  * @param <N> The type of the nodes in the graph.
  */
@@ -22,6 +22,6 @@ record EdgeImpl<N>(N from, N to, int weight) implements Edge<N> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to) + Objects.hash(from, to);
+        return Objects.hash(from, to);
     }
 }

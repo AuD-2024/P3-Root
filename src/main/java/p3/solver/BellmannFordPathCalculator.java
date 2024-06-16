@@ -21,29 +21,24 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
      */
     protected final Map<N, N> predecessors = new HashMap<>();
 
-    /**
-     * The set of nodes that have not yet been visited.
-     */
-    protected final Set<N> remainingNodes = new HashSet<>();
-
     @Override
     public List<N> calculatePath(N start, N end) {
         init(start);
         relax();
-        try {
-            checkNegativeCycles();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        return reconstructPath(start, end);
+        List<Edge<N>> negativeCycles = checkNegativeCycles();
+        if (negativeCycles.isEmpty()) {
+            return reconstructPath(start, end);
+        } else {
+            throw new RuntimeException("Got some cycles");
+        }
     }
 
 
     /**
      * This method initializes all distances from the start till the end with the appropriate distances.
      *
-     * @param start
+     * @param start the node that defines the beginning of the graph.
      */
     protected void init(N start) {
         distances.clear();
@@ -60,27 +55,32 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
      * Relax relaxes the connection between all nodes.
      */
     protected void relax() {
-        for (N node : graph.getNodes()) {
-            for (Edge<N> edge : graph.getEdges()) {
-                int newDistance = distances.get(edge.from()) + edge.weight();
-
-                if (distances.get(edge.from()) != Integer.MAX_VALUE && newDistance < distances.get(edge.to())) {
-                    distances.put((N) edge.to(), newDistance);
+        graph.getNodes()
+            .stream()
+            .flatMap(ignored -> graph.getEdges().stream())
+            .forEach(edge -> {
+                int startDistance = distances.get(edge.from());
+                int targetWeight = startDistance + edge.weight();
+                if (startDistance != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
+                    distances.put(edge.to(), targetWeight);
                     predecessors.put(edge.to(), edge.from());
                 }
-            }
-        }
-
+            });
     }
 
-    protected void checkNegativeCycles() throws Exception {
-        for (Edge edge : graph.getEdges()) {
+
+    protected List<Edge<N>> checkNegativeCycles() {
+        List<Edge<N>> cyclicEdges = new ArrayList<>();
+
+        for (Edge<N> edge : graph.getEdges()) {
             int src = distances.get(edge.from());
             int dest = distances.get(edge.to());
             if (src != Integer.MAX_VALUE && src + edge.weight() < dest) {
-                throw new Exception("Cycle Detected");
+                cyclicEdges.add(edge);
             }
         }
+
+        return cyclicEdges;
     }
 
     protected List<N> reconstructPath(N start, N end) {
