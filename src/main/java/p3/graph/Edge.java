@@ -6,13 +6,13 @@ public interface Edge<N> extends Comparable<Edge<N>> {
      * The first node from which this edge connects.
      * @return The first node that this edge connects.
      */
-    N from();
+    Node<N> from();
 
     /**
      * The second node that this edge connects.
      * @return The second node that this edge connects.
      */
-    N to();
+    Node<N> to();
 
     /**
      * The weight of the edge. The precise meaning of this value is up to the user.

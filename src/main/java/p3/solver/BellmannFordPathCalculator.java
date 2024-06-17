@@ -2,6 +2,7 @@ package p3.solver;
 
 import p3.graph.Edge;
 import p3.graph.Graph;
+import p3.graph.Node;
 
 import java.util.*;
 
@@ -14,15 +15,15 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
     /**
      * The distance from the start node to each node in the graph.
      */
-    protected final Map<N, Integer> distances = new HashMap<>();
+    protected final Map<Node<N>, Integer> distances = new HashMap<>();
 
     /**
      * The predecessor of each node in the graph along the shortest path to the start node.
      */
-    protected final Map<N, N> predecessors = new HashMap<>();
+    protected final Map<Node<N>, Node<N>> predecessors = new HashMap<>();
 
     @Override
-    public List<N> calculatePath(N start, N end) {
+    public List<Node<N>> calculatePath(Node<N> start, Node<N> end) {
         init(start);
         relax();
 
@@ -40,10 +41,10 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
      *
      * @param start the node that defines the beginning of the graph.
      */
-    protected void init(N start) {
+    protected void init(Node<N> start) {
         distances.clear();
         predecessors.clear();
-        for (N node : graph.getNodes()) {
+        for (Node<N> node : graph.getNodes()) {
             distances.put(node, Integer.MAX_VALUE);
             predecessors.put(node, null);
         }
@@ -83,9 +84,9 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         return cyclicEdges;
     }
 
-    protected List<N> reconstructPath(N start, N end) {
-        LinkedList<N> shortestPath = new LinkedList<>();
-        N current = end;
+    protected List<Node<N>> reconstructPath(Node<N> start, Node<N> end) {
+        LinkedList<Node<N>> shortestPath = new LinkedList<>();
+        Node<N> current = end;
         while (!current.equals(start)) {
             shortestPath.addFirst(current);
             current = predecessors.get(current);
