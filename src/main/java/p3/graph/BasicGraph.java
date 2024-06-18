@@ -24,19 +24,12 @@ public class BasicGraph<N> implements Graph<N> {
     protected final Set<Edge<N>> edges;
 
     /**
-     * Constructs a new empty {@link BasicGraph}.
-     */
-    public BasicGraph() {
-        this(Set.of(), Set.of());
-    }
-
-    /**
      * Constructs a new {@link BasicGraph} with the given nodes and edges.
      *
      * @param nodes the nodes.
      * @param edges the edges.
      */
-    public BasicGraph(Set<N> nodes, Set<Edge<N>> edges) {
+    public BasicGraph(Set<Node<N>> nodes, Set<Edge<N>> edges) {
         Set<Node<N>> nodesWithEdges = nodes.stream()
             .map(n -> new Node<>(edges.stream().filter(d -> d.from().equals(n)).collect(Collectors.toSet())))
             .collect(Collectors.toSet());
@@ -54,9 +47,4 @@ public class BasicGraph<N> implements Graph<N> {
     public Set<Edge<N>> getEdges() {
         return edges;
     }
-
-    /**
-     * An empty immutable {@link Graph}.
-     */
-    static Supplier<Graph<Object>> EMPTY = () -> new BasicGraph<>(Set.of(), Set.of());
 }

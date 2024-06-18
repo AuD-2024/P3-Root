@@ -32,16 +32,6 @@ public interface Graph<N> {
     Set<Edge<N>> getEdges();
 
     /**
-     * Creates a new empty immutable graph.
-     * @return a new empty immutable graph.
-     * @param <N> the type of the nodes in the graph.
-     */
-    @SuppressWarnings("unchecked")
-    static <N> Graph<N> of() {
-        return (Graph<N>) BasicGraph.EMPTY.get();
-    }
-
-    /**
      * Creates a new immutable graph with the given nodes and edges.
      * @param nodes the nodes in the graph.
      * @param edges the edges in the graph.

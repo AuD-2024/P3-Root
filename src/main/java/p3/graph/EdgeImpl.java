@@ -9,7 +9,7 @@ import java.util.Objects;
  * @param weight The weight of the edge.
  * @param <N> The type of the nodes in the graph.
  */
-record EdgeImpl<N>(N from, N to, int weight) implements Edge<N> {
+record EdgeImpl<N>(Node<N> from, Node<N> to, int weight) implements Edge<N> {
 
     @Override
     public boolean equals(Object o) {
