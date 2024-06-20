@@ -2,7 +2,6 @@ package p3.solver;
 
 import p3.graph.Edge;
 import p3.graph.Graph;
-import p3.graph.Node;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +26,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     public Graph<N> calculateMST() {
         init();
 
-        for (Node<N> node : graph.getNodes()) {
-            Set<Edge<N>> edges = node.getAdjacentEdges();
+        for (N node : graph.getNodes()) {
+            Set<Edge<N>> edges = graph.getOutgoingEdges(node);
             Edge<N> minEdge = minimumWeight(edges);
             mstEdges.add(minEdge);
         }
@@ -39,7 +38,7 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     protected void init() {
         mstEdges.clear();
 
-        for (Node<N> node : graph.getNodes()) {}
+        for (N node : graph.getNodes()) {}
     }
 
 

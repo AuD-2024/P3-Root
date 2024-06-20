@@ -2,7 +2,6 @@ package p3.solver;
 
 import p3.graph.Edge;
 import p3.graph.Graph;
-import p3.graph.Node;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,8 +13,8 @@ public class TopologicalSorting<N> {
      * The graph to calculate paths in.
      */
     protected Graph<N> graph;
-    private final Set<Node<N>> visited;
-    private final List<Node<N>> topologicalOrder;
+    private final Set<N> visited;
+    private final List<N> topologicalOrder;
 
     public TopologicalSorting(Graph<N> graph) {
         this.graph = graph;
@@ -23,15 +22,15 @@ public class TopologicalSorting<N> {
         this.topologicalOrder = new LinkedList<>();
     }
 
-    public List<Node<N>> sort(Node<N> start) {
+    public List<N> sort(N start) {
         return topologicalSort(start);
     }
 
-    public List<Node<N>> getTopologicalOrder() {
+    public List<N> getTopologicalOrder() {
         return topologicalOrder;
     }
 
-    private List<Node<N>> topologicalSort(Node<N> start) {
+    private List<N> topologicalSort(N start) {
         init();
         dfs(start);
         return topologicalOrder;
@@ -42,9 +41,9 @@ public class TopologicalSorting<N> {
         topologicalOrder.clear();
     }
 
-    private void dfs(Node<N> current) {
+    private void dfs(N current) {
         visited.add(current);
-        for (Edge<N> edge : current.getAdjacentEdges()) {
+        for (Edge<N> edge : graph.getOutgoingEdges(current)) {
             if (!visited.contains(edge.to())) {
                 dfs(edge.to());
             } else {

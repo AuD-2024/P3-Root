@@ -1,18 +1,31 @@
 package p3.graph;
 
+/**
+ * Represents a weighted, directed edge in a {@link Graph}.
+ * <p>
+ * It connects two nodes and associates a weight with the connection. The weight is any integer value and is used to
+ * order the edges in the graph.
+ * <p>
+ * Note that the edges are directed, i.e., an edge from node A to node B is different from an edge from node B to node A.
+ * The existence of one of them does not imply the existence of the other.
+ *
+ * @param <N>
+ */
 public interface Edge<N> extends Comparable<Edge<N>> {
 
     /**
-     * The first node from which this edge connects.
-     * @return The first node that this edge connects.
+     * Returns the node that this edge starts at, i.e., the node this edge is going out from.
+     *
+     * @return The node that this edge starts at.
      */
-    Node<N> from();
+    N from();
 
     /**
-     * The second node that this edge connects.
-     * @return The second node that this edge connects.
+     * Returns the node that this edge ends at, i.e., the node this edge is going into.
+     *
+     * @return The node that this edge ends at.
      */
-    Node<N> to();
+    N to();
 
     /**
      * The weight of the edge. The precise meaning of this value is up to the user.
@@ -26,16 +39,16 @@ public interface Edge<N> extends Comparable<Edge<N>> {
     int weight();
 
     /**
-     * Two edges are equal if they have the same nodes.
+     * Two edges are equal if they have the same nodes. The weight of the edges is not considered for equality.
      *
      * <p>More precisely, two edges <code>x</code> and <code>y</code> are equal iff:</p>
      * <ul>
-     *     <li><code>Objects.equals(x.getA(), y.getA())</code></li>
-     *     <li><code>Objects.equals(x.getB(), y.getB())</code></li>
+     *     <li><code>Objects.equals(x.from(), y.from())</code></li>
+     *     <li><code>Objects.equals(x.to(), y.to())</code></li>
      * </ul>
      *
      * @param other the other edge
-     * @return true if the edges are equal, false otherwise
+     * @return {@code true} if the edges are equal, {@code false} otherwise
      */
     boolean equals(Object other);
 
@@ -52,13 +65,14 @@ public interface Edge<N> extends Comparable<Edge<N>> {
 
     /**
      * Creates a new edge with the given nodes and weight.
-     * @param a the first node
-     * @param b the second node
+     *
+     * @param a      the first node
+     * @param b      the second node
      * @param weight the weight of the edge
+     * @param <N>    the type of the nodes in the graph
      * @return a new edge with the given nodes and weight
-     * @param <N> the type of the nodes in the graph
      */
-    static <N> Edge<N> of(Node<N> a, Node<N> b, int weight) {
+    static <N> Edge<N> of(N a, N b, int weight) {
         return new EdgeImpl<>(a, b, weight);
     }
 }

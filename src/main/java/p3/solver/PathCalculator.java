@@ -1,7 +1,5 @@
 package p3.solver;
 
-import p3.graph.Node;
-
 import java.util.List;
 
 /**
@@ -25,5 +23,5 @@ public interface PathCalculator<N> {
      *
      * @return A list representing the path found between the start and end nodes
      */
-    List<Node<N>> calculatePath(Node<N> start, Node<N> end);
+    List<N> calculatePath(N start, N end);
 }
