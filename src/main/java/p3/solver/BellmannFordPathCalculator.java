@@ -24,8 +24,12 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
 
     @Override
     public List<Node<N>> calculatePath(Node<N> start, Node<N> end) {
-        init(start);
-        relax();
+        initSSSP(start);
+
+        graph.getNodes()
+            .stream()
+            .flatMap(ignored -> graph.getEdges().stream())
+            .forEach(this::relax);
 
         List<Edge<N>> negativeCycles = checkNegativeCycles();
         if (negativeCycles.isEmpty()) {
@@ -41,7 +45,7 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
      *
      * @param start the node that defines the beginning of the graph.
      */
-    protected void init(Node<N> start) {
+    protected void initSSSP(Node<N> start) {
         distances.clear();
         predecessors.clear();
         for (Node<N> node : graph.getNodes()) {
@@ -55,20 +59,14 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
     /**
      * Relax relaxes the connection between all nodes.
      */
-    protected void relax() {
-        graph.getNodes()
-            .stream()
-            .flatMap(ignored -> graph.getEdges().stream())
-            .forEach(edge -> {
-                int startDistance = distances.get(edge.from());
-                int targetWeight = startDistance + edge.weight();
-                if (startDistance != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
-                    distances.put(edge.to(), targetWeight);
-                    predecessors.put(edge.to(), edge.from());
-                }
-            });
+    protected void relax(Edge<N> edge) {
+        int startDistance = distances.get(edge.from());
+        int targetWeight = startDistance + edge.weight();
+        if (startDistance != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
+            distances.put(edge.to(), targetWeight);
+            predecessors.put(edge.to(), edge.from());
+        }
     }
-
 
     protected List<Edge<N>> checkNegativeCycles() {
         List<Edge<N>> cyclicEdges = new ArrayList<>();
@@ -94,5 +92,4 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         shortestPath.addFirst(start);
         return shortestPath;
     }
-
 }

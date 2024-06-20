@@ -42,7 +42,7 @@ public class BasicGraph<N> implements Graph<N> {
     }
 
     public void addNode(Node<N> node) {
-
+        nodes.add(node);
     }
 
     @Override

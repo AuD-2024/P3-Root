@@ -38,6 +38,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
 
     protected void init() {
         mstEdges.clear();
+
+        for (Node<N> node : graph.getNodes()) {}
     }
 
 

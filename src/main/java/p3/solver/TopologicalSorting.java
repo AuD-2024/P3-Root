@@ -15,7 +15,7 @@ public class TopologicalSorting<N> {
      */
     protected Graph<N> graph;
     private final Set<Node<N>> visited;
-    private final LinkedList<Node<N>> topologicalOrder;
+    private final List<Node<N>> topologicalOrder;
 
     public TopologicalSorting(Graph<N> graph) {
         this.graph = graph;
@@ -23,17 +23,18 @@ public class TopologicalSorting<N> {
         this.topologicalOrder = new LinkedList<>();
     }
 
-    public void sort(Node<N> start) {
-        topologicalSort(start);
+    public List<Node<N>> sort(Node<N> start) {
+        return topologicalSort(start);
     }
 
     public List<Node<N>> getTopologicalOrder() {
         return topologicalOrder;
     }
 
-    private void topologicalSort(Node<N> start) {
+    private List<Node<N>> topologicalSort(Node<N> start) {
         init();
         dfs(start);
+        return topologicalOrder;
     }
 
     private void init() {
@@ -51,6 +52,6 @@ public class TopologicalSorting<N> {
             }
         }
 
-        topologicalOrder.addFirst(current);
+        topologicalOrder.add(0, current);
     }
 }
