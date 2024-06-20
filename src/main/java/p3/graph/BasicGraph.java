@@ -4,7 +4,6 @@ import p3.SetUtils;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +35,14 @@ public class BasicGraph<N> implements Graph<N> {
 
         this.nodes = SetUtils.immutableCopyOf(nodesWithEdges);
         this.edges = SetUtils.immutableCopyOf(edges);
+    }
+
+    public void addEdge(Edge<N> edge) {
+        nodes.stream().filter(node -> node == edge.from()).findFirst().ifPresent(node -> node.edges.add(edge));
+    }
+
+    public void addNode(Node<N> node) {
+
     }
 
     @Override

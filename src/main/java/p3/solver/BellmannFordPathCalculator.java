@@ -31,7 +31,7 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         if (negativeCycles.isEmpty()) {
             return reconstructPath(start, end);
         } else {
-            throw new RuntimeException("Got some cycles");
+            throw new CycleException("A cycle was detected");
         }
     }
 

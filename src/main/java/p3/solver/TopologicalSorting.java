@@ -4,6 +4,9 @@ import p3.graph.Edge;
 import p3.graph.Graph;
 import p3.graph.Node;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class TopologicalSorting<N> {
@@ -11,44 +14,26 @@ public class TopologicalSorting<N> {
      * The graph to calculate paths in.
      */
     protected Graph<N> graph;
-
-    private Set<Node<N>> visited;
-
-    private Set<Node<N>> topologicalOrder;
+    private final Set<Node<N>> visited;
+    private final LinkedList<Node<N>> topologicalOrder;
 
     public TopologicalSorting(Graph<N> graph) {
         this.graph = graph;
-        this.visited = Set.of();
-        this.topologicalOrder = Set.of();
+        this.visited = new HashSet<>();
+        this.topologicalOrder = new LinkedList<>();
     }
 
-    public boolean validate(Node<N> start) {
+    public void sort(Node<N> start) {
         topologicalSort(start);
-        return hasCycles();
     }
 
-    /**
-     * hasCycles validates the graph for cycles.
-     *
-     * @return true if graph has cycles, else false
-     */
-    private boolean hasCycles() {
-        Set<Node<N>> visStack = Set.of();
-
-        for (Node<N> node : topologicalOrder) {
-            if (visStack.contains(node)) {
-                return true;
-            }
-
-            visStack.add(node);
-        }
-
-        return false;
+    public List<Node<N>> getTopologicalOrder() {
+        return topologicalOrder;
     }
 
     private void topologicalSort(Node<N> start) {
         init();
-        processNode(start);
+        dfs(start);
     }
 
     private void init() {
@@ -56,14 +41,16 @@ public class TopologicalSorting<N> {
         topologicalOrder.clear();
     }
 
-    private void processNode(Node<N> current) {
+    private void dfs(Node<N> current) {
         visited.add(current);
         for (Edge<N> edge : current.getAdjacentEdges()) {
             if (!visited.contains(edge.to())) {
-                processNode(edge.to());
+                dfs(edge.to());
+            } else {
+                throw new CycleException("A cycle was detected");
             }
         }
 
-        topologicalOrder.add(current);
+        topologicalOrder.addFirst(current);
     }
 }
