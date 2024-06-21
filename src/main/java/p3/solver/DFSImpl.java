@@ -4,45 +4,40 @@ import p3.graph.Edge;
 import p3.graph.Graph;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
-public class TopologicalSorting<N> {
+public class DFSImpl<N> implements DFS<N> {
     /**
      * The graph to calculate paths in.
      */
     protected Graph<N> graph;
     private final Set<N> visited;
-    private final List<N> topologicalOrder;
+    private final BiConsumer<Integer, N> consumer;
+    private int time = 0;
 
-    public TopologicalSorting(Graph<N> graph) {
+    public DFSImpl(Graph<N> graph, BiConsumer<Integer, N> consumer) {
         this.graph = graph;
         this.visited = new HashSet<>();
-        this.topologicalOrder = new LinkedList<>();
+        this.consumer = consumer;
     }
 
-    public List<N> sort(N start) {
-        return topologicalSort(start);
-    }
-
-    public List<N> getTopologicalOrder() {
-        return topologicalOrder;
-    }
-
-    private List<N> topologicalSort(N start) {
+    @Override
+    public void dfs(N start) {
         init();
-        dfs(start);
-        return topologicalOrder;
+        visit(start);
     }
 
     private void init() {
         visited.clear();
-        topologicalOrder.clear();
+        time = 0;
     }
 
-    private void dfs(N current) {
+    private void visit(N current) {
+        int discoveryTime = time;
         visited.add(current);
+        time++;
+
         for (Edge<N> edge : graph.getOutgoingEdges(current)) {
             if (!visited.contains(edge.to())) {
                 dfs(edge.to());
@@ -51,6 +46,6 @@ public class TopologicalSorting<N> {
             }
         }
 
-        topologicalOrder.add(0, current);
+        consumer.accept(discoveryTime, current);
     }
 }

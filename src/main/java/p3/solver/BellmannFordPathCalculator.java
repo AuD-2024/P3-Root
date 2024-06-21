@@ -24,11 +24,7 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
     @Override
     public List<N> calculatePath(N start, N end) {
         initSSSP(start);
-
-        graph.getNodes()
-            .stream()
-            .flatMap(ignored -> graph.getEdges().stream())
-            .forEach(this::relax);
+        processGraph();
 
         List<Edge<N>> negativeCycles = checkNegativeCycles();
         if (negativeCycles.isEmpty()) {
@@ -53,6 +49,14 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         }
 
         distances.put(start, 0);
+    }
+
+    protected void processGraph() {
+        for (N ignored : graph.getNodes()) {
+            for (Edge<N> edge : graph.getEdges()) {
+                relax(edge);
+            }
+        }
     }
 
     /**
