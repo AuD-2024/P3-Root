@@ -32,7 +32,7 @@ public interface Graph<N> {
     Set<Edge<N>> getEdges();
 
     /**
-     * Returns all edges that start at the given node.
+     * Returns all edges that start at the given node. If there are no such edges, an empty set is returned.
      * <p>
      * For every edge {@code e} in the returned set, {@code e.from()} will return the given node.
      *
@@ -43,7 +43,7 @@ public interface Graph<N> {
     Set<Edge<N>> getOutgoingEdges(N node);
 
     /**
-     * Returns all edges that end at the given node.
+     * Returns all edges that end at the given node. If there are no such edges, an empty set is returned.
      * <p>
      * For every edge {@code e} in the returned set, {@code e.to()} will return the given node.
      *

@@ -130,7 +130,7 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
         for (N fromNode : nodeToIndex.keySet()) {
             if (representation.getAdjacentIndices(nodeToIndex.get(fromNode)).contains(nodeToIndex.get(node))) {
-                set.add(new EdgeImpl<>(fromNode, node, getWeight(fromNode, node)));
+                set.add(Edge.of(fromNode, node, getWeight(fromNode, node)));
             }
         }
 

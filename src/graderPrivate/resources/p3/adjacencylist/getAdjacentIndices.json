@@ -1,0 +1,27 @@
+[
+  {
+    "adjacencyList": [[1,2,3], [0,2], [2], [], [1]],
+    "index": 0,
+    "expected": [1,2,3]
+  },
+  {
+    "adjacencyList": [[1,2,3], [0,2], [2], [], [1]],
+    "index": 1,
+    "expected": [0,2]
+  },
+  {
+    "adjacencyList": [[1,2,3], [0,2], [2], [], [1]],
+    "index": 2,
+    "expected": [2]
+  },
+  {
+    "adjacencyList": [[1,2,3], [0,2], [2], [], [1]],
+    "index": 3,
+    "expected": []
+  },
+  {
+    "adjacencyList": [[1,2,3], [0,2], [2], [], [1]],
+    "index": 4,
+    "expected": [1]
+  }
+]

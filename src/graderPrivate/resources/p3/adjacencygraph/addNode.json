@@ -1,0 +1,18 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "nodeToAdd": 10
+  },
+  {
+    "nodes": [7,8,9],
+    "nodeToAdd": 1
+  },
+  {
+    "nodes": [0,1,2,3],
+    "nodeToAdd": 2
+  },
+  {
+    "nodes": [],
+    "nodeToAdd": 2
+  }
+]

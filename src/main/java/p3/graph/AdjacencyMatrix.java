@@ -36,6 +36,15 @@ public class AdjacencyMatrix implements AdjacencyRepresentation {
         matrix = new boolean[size][size];
     }
 
+    /**
+     * Constructs a new {@link AdjacencyMatrix} with the given matrix.
+     *
+     * @param matrix The initial matrix.
+     */
+    public AdjacencyMatrix(boolean[][] matrix) {
+        this.matrix = matrix;
+    }
+
     @Override
     public void addEdge(int from, int to) {
         matrix[from][to] = true;

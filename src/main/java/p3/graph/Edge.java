@@ -66,13 +66,13 @@ public interface Edge<N> extends Comparable<Edge<N>> {
     /**
      * Creates a new edge with the given nodes and weight.
      *
-     * @param a      the first node
-     * @param b      the second node
+     * @param from      the first node
+     * @param to      the second node
      * @param weight the weight of the edge
      * @param <N>    the type of the nodes in the graph
      * @return a new edge with the given nodes and weight
      */
-    static <N> Edge<N> of(N a, N b, int weight) {
-        return new EdgeImpl<>(a, b, weight);
+    static <N> Edge<N> of(N from, N to, int weight) {
+        return new EdgeImpl<>(from, to, weight);
     }
 }

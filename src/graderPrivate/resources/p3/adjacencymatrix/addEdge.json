@@ -1,0 +1,56 @@
+[
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 0,
+    "expectedAdjacencyMatrix": [[true, true, false], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 1,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 2,
+    "expectedAdjacencyMatrix": [[false, true, true], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 0,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 1,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, true, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 2,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 0,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [true, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 1,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 2,
+    "expectedAdjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]]
+  }
+]
