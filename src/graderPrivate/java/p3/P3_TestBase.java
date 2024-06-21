@@ -5,9 +5,14 @@ import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import p3.graph.AdjacencyGraph;
 import p3.graph.AdjacencyMatrix;
 import p3.graph.AdjacencyRepresentation;
+import p3.graph.Edge;
+import p3.solver.BellmanFordPathCalculator;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.fail;
 
@@ -23,6 +28,22 @@ public abstract class P3_TestBase {
             fail(context, result -> "Unexpected Exception:\n" + e.getMessage());
         }
     }
+
+    public static Set<Edge<Integer>> listToEdgeSet(List<List<Integer>> edges) {
+        Set<Edge<Integer>> edgeSet = new HashSet<>();
+
+        for (int i = 0; i < edges.size(); i++) {
+            for (int j = 0; j < edges.get(i).size(); j++) {
+                int weight = edges.get(i).get(j);
+                if (weight == 0) continue;
+                edgeSet.add(Edge.of(i, j, weight));
+            }
+        }
+
+        return edgeSet;
+    }
+
+    // Reflection helper methods
 
     public static boolean[][] getAdjacencyMatrix(AdjacencyMatrix matrix) throws ReflectiveOperationException {
         Field matrixField = AdjacencyMatrix.class.getDeclaredField("matrix");
@@ -73,5 +94,31 @@ public abstract class P3_TestBase {
         Field representationField = AdjacencyGraph.class.getDeclaredField("representation");
         representationField.setAccessible(true);
         return (AdjacencyRepresentation) representationField.get(graph);
+    }
+
+    public static void setPredecessors(BellmanFordPathCalculator<Integer> calculator, Map<Integer, Integer> predecessors) throws ReflectiveOperationException {
+        Field predecessorsField = BellmanFordPathCalculator.class.getDeclaredField("predecessors");
+        predecessorsField.setAccessible(true);
+        predecessorsField.set(calculator, predecessors);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Integer, Integer> getPredecessors(BellmanFordPathCalculator<Integer> calculator) throws ReflectiveOperationException {
+        Field predecessorsField = BellmanFordPathCalculator.class.getDeclaredField("predecessors");
+        predecessorsField.setAccessible(true);
+        return (Map<Integer, Integer>) predecessorsField.get(calculator);
+    }
+
+    public static void setDistances(BellmanFordPathCalculator<Integer> calculator, Map<Integer, Integer> distances) throws ReflectiveOperationException {
+        Field distancesField = BellmanFordPathCalculator.class.getDeclaredField("distances");
+        distancesField.setAccessible(true);
+        distancesField.set(calculator, distances);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Integer, Integer> getDistances(BellmanFordPathCalculator<Integer> calculator) throws ReflectiveOperationException {
+        Field distancesField = BellmanFordPathCalculator.class.getDeclaredField("distances");
+        distancesField.setAccessible(true);
+        return (Map<Integer, Integer>) distancesField.get(calculator);
     }
 }

@@ -347,18 +347,4 @@ public class AdjacencyGraphTest extends P3_TestBase {
         return nodeMap;
     }
 
-    private Set<Edge<Integer>> listToEdgeSet(List<List<Integer>> edges) {
-        Set<Edge<Integer>> edgeSet = new HashSet<>();
-
-        for (int i = 0; i < edges.size(); i++) {
-            for (int j = 0; j < edges.get(i).size(); j++) {
-                int weight = edges.get(i).get(j);
-                if (weight == 0) continue;
-                edgeSet.add(Edge.of(i, j, weight));
-            }
-        }
-
-        return edgeSet;
-    }
-
 }

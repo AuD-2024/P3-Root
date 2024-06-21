@@ -5,30 +5,32 @@ import p3.graph.Graph;
 
 import java.util.*;
 
-public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
+public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
+
     /**
      * The graph to calculate paths in.
      */
-    protected Graph<N> graph;
+    private final Graph<N> graph;
 
     /**
      * The distance from the start node to each node in the graph.
      */
-    protected final Map<N, Integer> distances = new HashMap<>();
+    private final Map<N, Integer> distances = new HashMap<>();
 
     /**
      * The predecessor of each node in the graph along the shortest path to the start node.
      */
-    protected final Map<N, N> predecessors = new HashMap<>();
+    private final Map<N, N> predecessors = new HashMap<>();
+
+    public BellmanFordPathCalculator(Graph<N> graph) {
+        this.graph = graph;
+    }
 
     @Override
     public List<N> calculatePath(N start, N end) {
         initSSSP(start);
 
-        graph.getNodes()
-            .stream()
-            .flatMap(ignored -> graph.getEdges().stream())
-            .forEach(this::relax);
+        processGraph();
 
         List<Edge<N>> negativeCycles = checkNegativeCycles();
         if (negativeCycles.isEmpty()) {
@@ -37,7 +39,6 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
             throw new CycleException("A cycle was detected");
         }
     }
-
 
     /**
      * This method initializes all distances from the start till the end with the appropriate distances.
@@ -56,12 +57,23 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
     }
 
     /**
+     * Relax every edge for every node in the graph once.
+     */
+    protected void processGraph() {
+        for (int i = 1; i < graph.getNodes().size(); i++) {
+            for (Edge<N> edge : graph.getEdges()) {
+                relax(edge);
+            }
+        }
+    }
+
+    /**
      * Relax relaxes the connection between all nodes.
      */
     protected void relax(Edge<N> edge) {
-        int startDistance = distances.get(edge.from());
-        int targetWeight = startDistance + edge.weight();
-        if (startDistance != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
+        int startWeight = distances.get(edge.from());
+        int targetWeight = startWeight + edge.weight();
+        if (startWeight != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
             distances.put(edge.to(), targetWeight);
             predecessors.put(edge.to(), edge.from());
         }
