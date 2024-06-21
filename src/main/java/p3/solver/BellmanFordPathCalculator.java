@@ -32,7 +32,7 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
 
         processGraph();
 
-        List<Edge<N>> negativeCycles = checkNegativeCycles();
+        Set<Edge<N>> negativeCycles = checkNegativeCycles();
         if (negativeCycles.isEmpty()) {
             return reconstructPath(start, end);
         } else {
@@ -79,8 +79,8 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
         }
     }
 
-    protected List<Edge<N>> checkNegativeCycles() {
-        List<Edge<N>> cyclicEdges = new ArrayList<>();
+    protected Set<Edge<N>> checkNegativeCycles() {
+        Set<Edge<N>> cyclicEdges = new HashSet<>();
 
         for (Edge<N> edge : graph.getEdges()) {
             int src = distances.get(edge.from());

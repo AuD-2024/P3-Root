@@ -2,6 +2,7 @@ package p3.solver;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
@@ -18,13 +19,11 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertTrue;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.call;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
 public class BellmanFordCalculatorTest extends P3_TestBase {
 
@@ -154,6 +153,135 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
 
         assertTrue(getPredecessors(calculator).isEmpty(), context.build(), result -> "The predecessors map should not change");
         assertTrue(getDistances(calculator).isEmpty(), context.build(), result -> "The distances map should not change");
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "../bellmanford/checkNegativeCycles.json")
+    public void testCheckNegativeCycles(JsonParameterSet params) throws ReflectiveOperationException {
+        testCheckNegativeCycles(params, false);
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "../bellmanford/checkNegativeCycles.json")
+    public void testCheckNegativeCyclesExact(JsonParameterSet params) throws ReflectiveOperationException {
+        testCheckNegativeCycles(params, true);
+    }
+
+    private void testCheckNegativeCycles(JsonParameterSet params, boolean exact) throws ReflectiveOperationException {
+        List<Integer> nodes = params.get("nodes");
+        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
+        List<Integer> predecessorList = params.get("predecessors");
+        List<Integer> distanceList = params.get("distances");
+        Set<Edge<Integer>> expectedEdges = listToEdgeSet(params.get("expectedEdges"));
+
+        Map<Integer, Integer> predecessors = createPredecessorMap(predecessorList, nodes);
+        Map<Integer, Integer> distances = createDistanceMap(distanceList, nodes);
+
+        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
+        BellmanFordPathCalculator<Integer> calculator = new BellmanFordPathCalculator<>(graph);
+
+        setPredecessors(calculator, predecessors);
+        setDistances(calculator, distances);
+
+        Context.Builder<?> context = contextBuilder()
+            .subject("BellmanFordPathCalculator.checkNegativeCycles")
+            .add("nodes", nodes)
+            .add("edges", edges)
+            .add("predecessors", predecessors)
+            .add("distances", distances)
+            .add("expectedEdges", expectedEdges);
+
+        Set<Edge<Integer>> actualEdges = callObject(calculator::checkNegativeCycles, context.build(),
+            result -> "checkNegativeCycles should not throw an exception");
+
+        context.add("actualEdges", actualEdges);
+
+        assertNotNull(actualEdges, context.build(), result -> "The method should not return null");
+
+        if (expectedEdges.isEmpty()) {
+            assertTrue(actualEdges.isEmpty(), context.build(), result -> "The method should return an empty set");
+        } else {
+            if (exact) {
+                assertEquals(expectedEdges.size(), actualEdges.size(), context.build(), result -> "The returned set does not have the correct size");
+
+                for (Edge<Integer> edge : expectedEdges) {
+                    assertTrue(actualEdges.contains(edge), context.build(), result -> "The returned set does not contain the edge %s".formatted(edge));
+                    assertEquals(edge.weight(), actualEdges.stream().filter(e -> e.equals(edge)).findFirst().get().weight(),
+                        context.build(), result -> "The returned edge %s has the wrong weight".formatted(edge));
+                }
+            } else {
+                assertTrue(!actualEdges.isEmpty(), context.build(), result -> "The returned set should not be empty");
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "../bellmanford/calculatePath.json")
+    public void testCalculatePath(JsonParameterSet params) {
+        List<Integer> nodes = params.get("nodes");
+        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
+        int start = params.getInt("start");
+        int end = params.getInt("end");
+        Set<Edge<Integer>> negativeCycleEdges = listToEdgeSet(params.get("negativeCycleEdges"));
+        boolean shouldThrowException = params.getBoolean("shouldThrowException");
+
+        List<Edge<Integer>> resultList = new ArrayList<>();
+
+        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
+        BellmanFordPathCalculator<Integer> calculator = spy(new BellmanFordPathCalculator<>(graph));
+
+        ArgumentCaptor<Integer> initSSSPCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> reconstructPathStartCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> reconstructPathEndCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        doNothing().when(calculator).initSSSP(initSSSPCaptor.capture());
+        doNothing().when(calculator).processGraph();
+        doReturn(negativeCycleEdges).when(calculator).checkNegativeCycles();
+        doReturn(resultList).when(calculator).reconstructPath(reconstructPathStartCaptor.capture(), reconstructPathEndCaptor.capture());
+
+        InOrder inOrder = inOrder(calculator);
+
+        Context context = contextBuilder()
+            .subject("BellmanFordPathCalculator.calculatePath")
+            .add("nodes", nodes)
+            .add("edges", edges)
+            .add("negativeCycleEdges", negativeCycleEdges)
+            .add("shouldThrowException", shouldThrowException)
+            .build();
+
+        boolean cycleExceptionThrown = false;
+
+        try {
+            List<Integer> actual = calculator.calculatePath(start, end);
+            assertSame(resultList, actual, context, result -> "The method should return the result of reconstructPath");
+        } catch (CycleException e) {
+            cycleExceptionThrown = true;
+        } catch (AssertionError e) {
+            throw e;
+        } catch (Throwable e) {
+            call(() -> {
+                throw e;
+            }, context, result -> "The method should not throw any other exception than CycleException");
+        }
+
+        if (cycleExceptionThrown && !shouldThrowException) {
+            fail(context, result -> "The method should not throw a CycleException but it did");
+        } else if (!cycleExceptionThrown && shouldThrowException) {
+            fail(context, result -> "The method should throw a CycleException but it did not");
+        }
+
+        checkVerify(() -> inOrder.verify(calculator).initSSSP(any()), context, "initSSSP should be called exactly once");
+        assertEquals(start, initSSSPCaptor.getValue(), context, result -> "initSSSP should be called with the start node");
+
+        checkVerify(() -> inOrder.verify(calculator).processGraph(), context, "processGraph should be called exactly once after initSSSP");
+        checkVerify(() -> inOrder.verify(calculator).checkNegativeCycles(), context, "checkNegativeCycles should be called exactly once after processGraph");
+
+        if (!shouldThrowException) {
+            checkVerify(() -> inOrder.verify(calculator).reconstructPath(any(), any()), context, "reconstructPath should be called exactly once after checkNegativeCycles");
+            assertEquals(start, reconstructPathStartCaptor.getValue(), context, result -> "reconstructPath should be called with the start node as the first parameter");
+            assertEquals(end, reconstructPathEndCaptor.getValue(), context, result -> "reconstructPath should be called with the end node as the second parameter");
+        }
+
     }
 
     private void assertMapEquals(Map<Integer, Integer> expected, Map<Integer, Integer> actual, Context context, String mapName) {
