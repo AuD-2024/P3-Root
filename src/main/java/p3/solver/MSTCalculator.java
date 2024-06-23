@@ -23,7 +23,7 @@ public interface MSTCalculator<N> {
      *
      * @return A new graph describing the MST.
      */
-    Graph<N> calculateMST();
+    Graph<N> calculateMST(N root);
 
     /**
      * A factory for creating new instances of {@link MSTCalculator}.

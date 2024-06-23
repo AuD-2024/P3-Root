@@ -18,7 +18,7 @@ public class AdjacencyMatrix implements AdjacencyRepresentation {
     /**
      * A factory that creates an {@link AdjacencyMatrix} with the given size.
      */
-    public static final Function<Integer, AdjacencyRepresentation> FACTORY = AdjacencyMatrix::new;
+    public static final AdjacencyRepresentation.Factory FACTORY = AdjacencyList::new;
 
     /**
      * The underlying array that stores the adjacency matrix.

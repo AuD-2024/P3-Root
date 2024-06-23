@@ -1,5 +1,6 @@
 package p3.graph;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -78,4 +79,12 @@ public interface MutableGraph<N> extends Graph<N> {
         return new AdjacencyGraph<>(nodes, edges, AdjacencyList.FACTORY);
     }
 
+    /**
+     * Creates a new {@link MutableGraph} that does not contain any edges or nodes.
+     * @return an empty, mutable graph.
+     * @param <N>   the type of the nodes in the graph.
+     */
+    static <N> MutableGraph<N> empty() {
+        return new AdjacencyGraph<>(new HashSet<>(), new HashSet<>(), AdjacencyList.FACTORY);
+    }
 }

@@ -58,7 +58,7 @@ tasks {
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 }

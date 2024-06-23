@@ -1,5 +1,8 @@
 package p3.graph;
 
+import p3.solver.MSTCalculator;
+import p3.solver.PathCalculator;
+
 import java.util.Set;
 
 /**
@@ -66,5 +69,18 @@ public interface AdjacencyRepresentation {
      * representation to a new, larger one.
      */
     void grow();
+
+    /**
+     * A factory for creating new instances of {@link AdjacencyRepresentation}.
+     */
+    interface Factory {
+
+        /**
+         * Create a new instance of {@link AdjacencyRepresentation} for the given graph.
+         * @return a new instance of {@link AdjacencyRepresentation}.
+         * @param size The size of the adjacency representation
+         */
+        AdjacencyRepresentation create(int size);
+    }
 
 }

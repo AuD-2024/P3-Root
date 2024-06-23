@@ -1,5 +1,7 @@
 package p3.solver;
 
+import p3.graph.Graph;
+
 import java.util.List;
 
 /**
@@ -24,4 +26,18 @@ public interface PathCalculator<N> {
      * @return A list representing the path found between the start and end nodes
      */
     List<N> calculatePath(N start, N end);
+
+    /**
+     * A factory for creating new instances of {@link MSTCalculator}.
+     */
+    interface Factory {
+
+        /**
+         * Create a new instance of {@link PathCalculator} for the given graph.
+         * @param graph the graph to calculate the MST for.
+         * @return a new instance of {@link PathCalculator}.
+         * @param <N> The type of the nodes in the graph.
+         */
+        <N> PathCalculator<N> create(Graph<N> graph);
+    }
 }

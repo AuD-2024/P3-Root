@@ -5,7 +5,9 @@ import p3.graph.Graph;
 
 import java.util.*;
 
-public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
+public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
+    public static PathCalculator.Factory FACTORY = BellmanFordPathCalculator::new;
+
     /**
      * The graph to calculate paths in.
      */
@@ -14,23 +16,29 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
     /**
      * The distance from the start node to each node in the graph.
      */
-    protected final Map<N, Integer> distances = new HashMap<>();
+    protected final Map<N, Integer> distances;
 
     /**
      * The predecessor of each node in the graph along the shortest path to the start node.
      */
-    protected final Map<N, N> predecessors = new HashMap<>();
+    protected final Map<N, N> predecessors;
+
+    public BellmanFordPathCalculator(Graph<N> graph) {
+        this.graph = graph;
+        this.distances = new HashMap<>();
+        this.predecessors = new HashMap<>();
+    }
 
     @Override
     public List<N> calculatePath(N start, N end) {
         initSSSP(start);
         processGraph();
 
-        List<Edge<N>> negativeCycles = checkNegativeCycles();
+        Set<Edge<N>> negativeCycles = checkNegativeCycles();
         if (negativeCycles.isEmpty()) {
             return reconstructPath(start, end);
         } else {
-            throw new CycleException("A cycle was detected");
+            throw new CycleException("A negative cycle was detected");
         }
     }
 
@@ -51,8 +59,11 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         distances.put(start, 0);
     }
 
+    /**
+     * This method processes the given graph with the BellmanFord algorithm.
+     */
     protected void processGraph() {
-        for (N ignored : graph.getNodes()) {
+        for (int i = 1; i < graph.getNodes().size(); i++) {
             for (Edge<N> edge : graph.getEdges()) {
                 relax(edge);
             }
@@ -63,16 +74,22 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
      * Relax relaxes the connection between all nodes.
      */
     protected void relax(Edge<N> edge) {
-        int startDistance = distances.get(edge.from());
-        int targetWeight = startDistance + edge.weight();
-        if (startDistance != Integer.MAX_VALUE && targetWeight < distances.get(edge.to())) {
-            distances.put(edge.to(), targetWeight);
+        int distance = distances.get(edge.from());
+        int weight = distance + edge.weight();
+        if (distance != Integer.MAX_VALUE && weight < distances.get(edge.to())) {
+            distances.put(edge.to(), weight);
             predecessors.put(edge.to(), edge.from());
         }
     }
 
-    protected List<Edge<N>> checkNegativeCycles() {
-        List<Edge<N>> cyclicEdges = new ArrayList<>();
+    /**
+     * This method checks the graph for cyclic edges.
+     *
+     *
+     * @return all cyclic edges in the graph
+     */
+    protected Set<Edge<N>> checkNegativeCycles() {
+        Set<Edge<N>> cyclicEdges = new HashSet<>();
 
         for (Edge<N> edge : graph.getEdges()) {
             int src = distances.get(edge.from());
@@ -85,6 +102,13 @@ public class BellmannFordPathCalculator<N> implements PathCalculator<N> {
         return cyclicEdges;
     }
 
+    /**
+     * This method reconstructs the path between two vertices in the graph.
+     *
+     * @param start Start node in the graph
+     * @param end End node in the graph
+     * @return List of nodes between start and end nodes in the graph
+     */
     protected List<N> reconstructPath(N start, N end) {
         LinkedList<N> shortestPath = new LinkedList<>();
         N current = end;

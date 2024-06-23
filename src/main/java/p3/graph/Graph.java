@@ -54,6 +54,18 @@ public interface Graph<N> {
     Set<Edge<N>> getIngoingEdges(N node);
 
     /**
+     * Returns all adjacent edges at the given node
+     * <p>
+     *  For every edge {@code e} in the returned set, {@code e.to()} or {@code e.from()} will return the given node.
+     *
+     */
+    default Set<Edge<N>> getAdjacentEdges(N node) {
+        Set<Edge<N>> adjacentEdges = getOutgoingEdges(node);
+        adjacentEdges.addAll(getIngoingEdges(node));
+        return adjacentEdges;
+    }
+
+    /**
      * Returns the edge that starts at the given node and ends at the other given node.
      *
      * @param from the node that the edge starts at.
@@ -73,5 +85,14 @@ public interface Graph<N> {
      */
     static <N> Graph<N> of(Set<N> nodes, Set<Edge<N>> edges) {
         return new AdjacencyGraph<>(nodes, edges, AdjacencyList.FACTORY);
+    }
+
+    /**
+     * Creates a new {@link Graph} that does not contain any edges or nodes.
+     * @return an empty, mutable graph.
+     * @param <N>   the type of the nodes in the graph.
+     */
+    static <N> Graph<N> empty() {
+        return new AdjacencyGraph<>(Set.of(), Set.of(), AdjacencyList.FACTORY);
     }
 }

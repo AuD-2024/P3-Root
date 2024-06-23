@@ -1,5 +1,7 @@
 package p3.graph;
 
+import p3.solver.MSTCalculator;
+
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.function.Function;
@@ -17,7 +19,7 @@ public class AdjacencyList implements AdjacencyRepresentation {
     /**
      * A factory that creates an {@link AdjacencyList} with the given size.
      */
-    public static final Function<Integer, AdjacencyRepresentation> FACTORY = AdjacencyList::new;
+    public static final AdjacencyRepresentation.Factory FACTORY = AdjacencyList::new;
 
     /**
      * The underlying array that stores the adjacencyList.
@@ -80,4 +82,17 @@ public class AdjacencyList implements AdjacencyRepresentation {
         }
     }
 
+    /**
+     * A factory for creating new instances of {@link AdjacencyList}.
+     */
+    interface Factory {
+
+        /**
+         * Create a new instance of {@link AdjacencyList} for the given graph.
+         * @param graph the graph to calculate the MST for.
+         * @return a new instance of {@link MSTCalculator}.
+         * @param <N> The type of the nodes in the graph.
+         */
+        <N> MSTCalculator<N> create(Graph<N> graph);
+    }
 }

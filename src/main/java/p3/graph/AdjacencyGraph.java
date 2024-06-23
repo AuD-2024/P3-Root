@@ -49,8 +49,8 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
      * @param edges                 the initial set of edges.
      * @param representationFactory a factory that creates an {@link AdjacencyRepresentation} with the given size.
      */
-    public AdjacencyGraph(Set<N> nodes, Set<Edge<N>> edges, Function<Integer, AdjacencyRepresentation> representationFactory) {
-        representation = representationFactory.apply(nodes.size());
+    public AdjacencyGraph(Set<N> nodes, Set<Edge<N>> edges, AdjacencyRepresentation.Factory representationFactory) {
+        representation = representationFactory.create(nodes.size());
 
         int index = 0;
 
@@ -116,7 +116,7 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
         for (int adjacentIndex : adjacentIndices) {
             N toNode = indexToNode.get(adjacentIndex);
-            set.add(new EdgeImpl<>(node, toNode, getWeight(node, toNode)));
+            set.add(Edge.of(node, toNode, getWeight(node, toNode)));
         }
 
         return set;
@@ -130,7 +130,7 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
         for (N fromNode : nodeToIndex.keySet()) {
             if (representation.getAdjacentIndices(nodeToIndex.get(fromNode)).contains(nodeToIndex.get(node))) {
-                set.add(new EdgeImpl<>(fromNode, node, getWeight(fromNode, node)));
+                set.add(Edge.of(fromNode, node, getWeight(fromNode, node)));
             }
         }
 
