@@ -31,14 +31,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      */
     protected final Set<N> remainingNodes;
 
-    /**
-     * The edges in the MST.
-     */
-    protected final Set<Edge<N>> mstEdges;
-
     public PrimMSTCalculator(Graph<N> graph) {
         this.graph = graph;
-        this.mstEdges = new HashSet<>();
         this.predecessors = new HashMap<>();
         this.keys = new HashMap<>();
         this.remainingNodes = new HashSet<>();
@@ -52,7 +46,7 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
             processNode(extractMin());
         }
 
-        return Graph.of(graph.getNodes(), mstEdges);
+        return Graph.of(graph.getNodes(), calculateMSTEdges());
     }
 
     /**
@@ -73,7 +67,6 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @param root the root node of the tree
      */
     protected void init(N root) {
-        mstEdges.clear();
         predecessors.clear();
         keys.clear();
 
@@ -104,5 +97,18 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
         remainingNodes.remove(minNode);
 
         return minNode;
+    }
+
+    protected Set<Edge<N>> calculateMSTEdges() {
+        Set<Edge<N>> mstEdges = new HashSet<>();
+
+        for (N node : graph.getNodes()) {
+            N predecessor = predecessors.get(node);
+            if (predecessor != null) {
+                mstEdges.add(Edge.of(predecessor, node, keys.get(node)));
+            }
+        }
+
+        return mstEdges;
     }
 }
