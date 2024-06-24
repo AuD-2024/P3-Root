@@ -37,11 +37,6 @@ public class DFS<N> implements GraphTraverser<N> {
     protected int time = 0;
 
     /**
-     * Stores whether the graph contains cycles.
-     */
-    protected boolean cyclic;
-
-    /**
      * Creates a new {@link DFS} for the given graph.
      *
      * @param graph the graph to traverse.
@@ -49,19 +44,6 @@ public class DFS<N> implements GraphTraverser<N> {
     public DFS(Graph<N> graph) {
         this.graph = graph;
         this.visited = new HashSet<>();
-        this.cyclic = false;
-    }
-
-    /**
-     * Checks whether the graph contains negative cycles.
-     * <p>
-     * The result is only valid for the last traversal of the graph. If the graph has been changed since the last
-     * traversal, the result may be incorrect. If the graph has not been traversed yet, the result is always {@code false}.
-     *
-     * @return {@code true} if graph contains negative cycles, {@code false} otherwise.
-     */
-    public boolean isCyclic() {
-        return cyclic;
     }
 
     @Override
@@ -79,7 +61,6 @@ public class DFS<N> implements GraphTraverser<N> {
      */
     protected void init() {
         visited.clear();
-        cyclic = false;
         time = 0;
     }
 
@@ -99,8 +80,6 @@ public class DFS<N> implements GraphTraverser<N> {
         for (Edge<N> edge : graph.getOutgoingEdges(current)) {
             if (!visited.contains(edge.to())) {
                 visit(consumer, edge.to());
-            } else {
-                this.cyclic = true;
             }
         }
 
