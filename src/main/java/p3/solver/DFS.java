@@ -18,7 +18,7 @@ public class DFS<N> implements GraphTraverser<N> {
     /**
      * Factory for creating new instances of {@link DFS}.
      */
-    public static GraphTraverser.Factory FACTORY = DFS::new;
+    public static final GraphTraverser.Factory FACTORY = DFS::new;
 
     /**
      * The graph to traverse.

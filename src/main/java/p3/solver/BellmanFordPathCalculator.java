@@ -16,12 +16,12 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
     /**
      * Factory for creating new instances of {@link BellmanFordPathCalculator}.
      */
-    public static PathCalculator.Factory FACTORY = BellmanFordPathCalculator::new;
+    public static final PathCalculator.Factory FACTORY = BellmanFordPathCalculator::new;
 
     /**
      * The graph to calculate paths in.
      */
-    protected Graph<N> graph;
+    protected final Graph<N> graph;
 
     /**
      * The current determined distance from the start node to each node in the graph.

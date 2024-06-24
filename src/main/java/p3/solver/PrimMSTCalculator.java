@@ -19,7 +19,7 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     /**
      * Factory for creating new instances of {@link PrimMSTCalculator}.
      */
-    public static MSTCalculator.Factory FACTORY = PrimMSTCalculator::new;
+    public static final MSTCalculator.Factory FACTORY = PrimMSTCalculator::new;
 
     /**
      * The graph to calculate the MST for.
