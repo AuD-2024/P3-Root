@@ -94,6 +94,7 @@ public class DFS<N> implements GraphTraverser<N> {
      */
     protected void visit(ObjIntConsumer<N> consumer, N current) {
         time++;
+        visited.add(current);
 
         for (Edge<N> edge : graph.getOutgoingEdges(current)) {
             if (!visited.contains(edge.to())) {
