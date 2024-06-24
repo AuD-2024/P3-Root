@@ -7,20 +7,27 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 
+/**
+ * An implementation of the {@link GraphTraverser} interface that uses the Depth-First Search algorithm to traverse
+ * the graph
+ *
+ * @param <N> the type of the nodes in the graph.
+ */
 public class DFS<N> implements GraphTraverser<N> {
+
     /**
      * Factory for creating new instances of {@link DFS}.
      */
     public static GraphTraverser.Factory FACTORY = DFS::new;
 
-
     /**
-     * The graph to calculate paths in.
+     * The graph to traverse.
      */
     protected final Graph<N> graph;
 
     /**
-     * Visited contains all nodes that have already been visited.
+     * A set of all nodes that have already been visited. A node being added this set is equivalent to it being
+     * colored gray.
      */
     protected final Set<N> visited;
 
@@ -30,10 +37,15 @@ public class DFS<N> implements GraphTraverser<N> {
     protected int time = 0;
 
     /**
-     * Stores whether the graph contains negative cycles or not.
+     * Stores whether the graph contains cycles.
      */
     protected boolean cyclic;
 
+    /**
+     * Creates a new {@link DFS} for the given graph.
+     *
+     * @param graph the graph to traverse.
+     */
     public DFS(Graph<N> graph) {
         this.graph = graph;
         this.visited = new HashSet<>();
@@ -41,15 +53,19 @@ public class DFS<N> implements GraphTraverser<N> {
     }
 
     /**
-     * Determines if the graph does contain negative cycles
-     * @return true if graph contains negative cycles.
+     * Checks whether the graph contains negative cycles.
+     * <p>
+     * The result is only valid for the last traversal of the graph. If the graph has been changed since the last
+     * traversal, the result may be incorrect. If the graph has not been traversed yet, the result is always {@code false}.
+     *
+     * @return {@code true} if graph contains negative cycles, {@code false} otherwise.
      */
     public boolean isCyclic() {
         return cyclic;
     }
 
     @Override
-    public void dfs(ObjIntConsumer<N> consumer) {
+    public void traverse(ObjIntConsumer<N> consumer) {
         init();
         for (N node : graph.getNodes()) {
             if (!visited.contains(node)) {
@@ -59,7 +75,7 @@ public class DFS<N> implements GraphTraverser<N> {
     }
 
     /**
-     * Init initializes the DFS graph and its fields
+     * Initializes the DFS algorithm to its starting state.
      */
     protected void init() {
         visited.clear();
@@ -68,11 +84,13 @@ public class DFS<N> implements GraphTraverser<N> {
     }
 
     /**
-     * visit visits a new node in the graph.
-     * The discovered node is propagated to the consumer.
+     * Visits a new node in the graph.
+     * <p>
+     * A node is visited by first coloring it gray and then recursively visiting all its neighbors. After all neighbors
+     * have been visited, the node is colored black, i.e., it is passed to the consumer.
      *
      * @param consumer Function that accepts the node and its finish time.
-     * @param current Node that is processed by this method
+     * @param current  Node that is processed by this method
      */
     protected void visit(ObjIntConsumer<N> consumer, N current) {
         time++;

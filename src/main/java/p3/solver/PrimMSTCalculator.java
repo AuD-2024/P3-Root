@@ -3,9 +3,19 @@ package p3.solver;
 import p3.graph.Edge;
 import p3.graph.Graph;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * An implementation of the {@link MSTCalculator} interface that uses the Prim algorithm to calculate the minimum
+ * spanning tree of a {@link Graph}.
+ *
+ * @param <N> the type of the nodes in the graph.
+ */
 public class PrimMSTCalculator<N> implements MSTCalculator<N> {
+
     /**
      * Factory for creating new instances of {@link PrimMSTCalculator}.
      */
@@ -17,12 +27,12 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     protected final Graph<N> graph;
 
     /**
-     * Stores the predecessor for each node.
+     * Stores the current predecessor for each node.
      */
     protected final Map<N, N> predecessors;
 
     /**
-     * Stores the current minimum distance for each node
+     * Stores the weight of the edge from the current predecessor of each node to that node.
      */
     protected final Map<N, Integer> keys;
 
@@ -31,6 +41,11 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      */
     protected final Set<N> remainingNodes;
 
+    /**
+     * Creates a new {@link PrimMSTCalculator} for the given graph.
+     *
+     * @param graph the graph to calculate the MST for.
+     */
     public PrimMSTCalculator(Graph<N> graph) {
         this.graph = graph;
         this.predecessors = new HashMap<>();
@@ -51,11 +66,12 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
 
     /**
      * Processes the current node with the prim algorithm
+     *
      * @param node current node processed by the algorithm
      */
     protected void processNode(N node) {
         for (Edge<N> outgoingEdge : graph.getOutgoingEdges(node)) {
-            if (!remainingNodes.contains(outgoingEdge.to()) && outgoingEdge.weight() < keys.get(outgoingEdge.to())) {
+            if (remainingNodes.contains(outgoingEdge.to()) && outgoingEdge.weight() < keys.get(outgoingEdge.to())) {
                 keys.put(outgoingEdge.to(), outgoingEdge.weight());
                 predecessors.put(outgoingEdge.to(), node);
             }
@@ -64,7 +80,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
 
     /**
      * Initializes the fields before executing the prim algorithm
-     * @param root the root node of the tree
+     *
+     * @param root the root node of the calculated mst.
      */
     protected void init(N root) {
         predecessors.clear();
@@ -79,8 +96,9 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     }
 
     /**
-     * Extracts the current minimum node from the graph which target was not yet visited
-     * @return nearest node
+     * Extracts the node with the smallest key from the remaining nodes and removes it from the set.
+     *
+     * @return the node in the remaining nodes set with the smallest key.
      */
     protected N extractMin() {
         int min = Integer.MAX_VALUE;
@@ -99,6 +117,12 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
         return minNode;
     }
 
+    /**
+     * Calculates the edges of the minimum spanning tree using the previously calculated information in the predecessors
+     * and keys maps.
+     *
+     * @return the edges of the minimum spanning tree
+     */
     protected Set<Edge<N>> calculateMSTEdges() {
         Set<Edge<N>> mstEdges = new HashSet<>();
 

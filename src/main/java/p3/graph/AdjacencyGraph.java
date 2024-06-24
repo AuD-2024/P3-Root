@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * A mutable, directed, weighted graph that uses an {@link AdjacencyRepresentation} to store the graph.

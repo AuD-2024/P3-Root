@@ -4,7 +4,6 @@ import p3.solver.MSTCalculator;
 
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * A representation of a directed graph using an array of linked lists.
@@ -17,7 +16,7 @@ import java.util.function.Function;
 public class AdjacencyList implements AdjacencyRepresentation {
 
     /**
-     * A factory that creates an {@link AdjacencyList} with the given size.
+     * A factory that creates an empty {@link AdjacencyList} with the given initial size.
      */
     public static final AdjacencyRepresentation.Factory FACTORY = AdjacencyList::new;
 
@@ -89,9 +88,10 @@ public class AdjacencyList implements AdjacencyRepresentation {
 
         /**
          * Create a new instance of {@link AdjacencyList} for the given graph.
+         *
          * @param graph the graph to calculate the MST for.
+         * @param <N>   The type of the nodes in the graph.
          * @return a new instance of {@link MSTCalculator}.
-         * @param <N> The type of the nodes in the graph.
          */
         <N> MSTCalculator<N> create(Graph<N> graph);
     }
