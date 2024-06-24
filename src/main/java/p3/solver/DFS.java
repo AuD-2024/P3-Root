@@ -61,7 +61,7 @@ public class DFS<N> implements GraphTraverser<N> {
     /**
      * Init initializes the DFS graph and its fields
      */
-    private void init() {
+    protected void init() {
         visited.clear();
         cyclic = false;
         time = 0;
@@ -74,7 +74,7 @@ public class DFS<N> implements GraphTraverser<N> {
      * @param consumer Function that accepts the node and its finish time.
      * @param current Node that is processed by this method
      */
-    private void visit(ObjIntConsumer<N> consumer, N current) {
+    protected void visit(ObjIntConsumer<N> consumer, N current) {
         time++;
 
         for (Edge<N> edge : graph.getOutgoingEdges(current)) {
