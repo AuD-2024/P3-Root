@@ -1,10 +1,10 @@
-package p3;
+package p3.graph;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
-import p3.graph.AdjacencyList;
+import p3.P3_TestBase;
 
 import java.util.Arrays;
 import java.util.LinkedList;

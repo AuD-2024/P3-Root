@@ -1,12 +1,11 @@
-package p3;
+package p3.graph;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.ArgumentCaptor;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
-import p3.graph.AdjacencyGraph;
-import p3.graph.Edge;
+import p3.P3_TestBase;
 import p3.implementation.TestAdjacencyRepresentation;
 
 import java.util.HashMap;
