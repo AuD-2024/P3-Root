@@ -28,7 +28,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 public class BellmanFordCalculatorTest extends P3_TestBase {
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/initSSSP.json")
+    @JsonParameterSetTest(value = "bellmanford/initSSSP.json")
     public void testInitSSSP(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
@@ -69,7 +69,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/relax.json")
+    @JsonParameterSetTest(value = "bellmanford/relax.json")
     public void testRelax(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
@@ -115,7 +115,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
 
     @SuppressWarnings("unchecked")
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/processGraph.json")
+    @JsonParameterSetTest(value = "bellmanford/processGraph.json")
     public void testProcessGraph(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
@@ -156,13 +156,13 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/checkNegativeCycles.json")
+    @JsonParameterSetTest(value = "bellmanford/checkNegativeCycles.json")
     public void testCheckNegativeCycles(JsonParameterSet params) throws ReflectiveOperationException {
         testCheckNegativeCycles(params, false);
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/checkNegativeCycles.json")
+    @JsonParameterSetTest(value = "bellmanford/checkNegativeCycles.json")
     public void testCheckNegativeCyclesExact(JsonParameterSet params) throws ReflectiveOperationException {
         testCheckNegativeCycles(params, true);
     }
@@ -216,7 +216,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "../bellmanford/calculatePath.json")
+    @JsonParameterSetTest(value = "bellmanford/calculatePath.json")
     public void testCalculatePath(JsonParameterSet params) {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
