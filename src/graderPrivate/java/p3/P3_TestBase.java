@@ -23,7 +23,7 @@ public abstract class P3_TestBase {
         try {
             verifier.run();
         } catch (AssertionError e) {
-            fail(context, result -> msg + " Original error message:\n" + e.getMessage());
+            fail(context, result -> msg + ". Original error message:\n" + e.getMessage());
         } catch (Exception e) {
             fail(context, result -> "Unexpected Exception:\n" + e.getMessage());
         }

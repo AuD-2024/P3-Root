@@ -1,0 +1,14 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "visited": [],
+    "time": 0,
+    "cyclic": false
+  },
+  {
+    "nodes": [0,1,2,3,4,5],
+    "visited": [1,2,3,4],
+    "time": 9,
+    "cyclic": true
+  }
+]
