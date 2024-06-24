@@ -27,9 +27,9 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
     protected final Map<N, Integer> keys;
 
     /**
-     * Stores the nodes that have been visited by the graph.
+     * Stores the nodes that have not yet been visited by the algorithm.
      */
-    protected final Set<N> visited;
+    protected final Set<N> remainingNodes;
 
     /**
      * The edges in the MST.
@@ -41,13 +41,14 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
         this.mstEdges = new HashSet<>();
         this.predecessors = new HashMap<>();
         this.keys = new HashMap<>();
-        this.visited = new HashSet<>();
+        this.remainingNodes = new HashSet<>();
     }
 
     @Override
     public Graph<N> calculateMST(N root) {
         init(root);
-        while (!visited.containsAll(graph.getNodes())) {
+
+        while (!remainingNodes.isEmpty()) {
             processNode(extractMin());
         }
 
@@ -59,10 +60,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @param node current node processed by the algorithm
      */
     protected void processNode(N node) {
-        visited.add(node);
-
         for (Edge<N> outgoingEdge : graph.getOutgoingEdges(node)) {
-            if (!visited.contains(outgoingEdge.to()) && outgoingEdge.weight() < keys.get(outgoingEdge.to())) {
+            if (!remainingNodes.contains(outgoingEdge.to()) && outgoingEdge.weight() < keys.get(outgoingEdge.to())) {
                 keys.put(outgoingEdge.to(), outgoingEdge.weight());
                 predecessors.put(outgoingEdge.to(), node);
             }
@@ -92,15 +91,18 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      */
     protected N extractMin() {
         int min = Integer.MAX_VALUE;
-        Edge<N> minEdge = null;
+        N minNode = null;
 
-        for (Edge<N> edge : graph.getEdges()) {
-            if (!visited.contains(edge.to()) && edge.weight() < min) {
-                minEdge = edge;
-                min = edge.weight();
+        for (N node : remainingNodes) {
+            int key = keys.get(node);
+            if (key < min) {
+                minNode = node;
+                min = key;
             }
         }
 
-        return minEdge.to();
+        remainingNodes.remove(minNode);
+
+        return minNode;
     }
 }
