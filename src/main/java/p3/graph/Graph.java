@@ -1,5 +1,6 @@
 package p3.graph;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -54,15 +55,36 @@ public interface Graph<N> {
     Set<Edge<N>> getIngoingEdges(N node);
 
     /**
-     * Returns all adjacent edges at the given node
+     * Returns all adjacent edges at the given node.
      * <p>
-     *  For every edge {@code e} in the returned set, {@code e.to()} or {@code e.from()} will return the given node.
+     * For every edge {@code e} in the returned set, {@code e.to()} or {@code e.from()} will return the given node.
      *
+     * @param node the node to get the adjacent edges for.
+     * @return a set of all edges that are adjacent to the given node.
      */
-    default Set<Edge<N>> getAdjacentEdges(N node) {
+    default Set<Edge<N>> getAllAdjacentEdges(N node) {
         Set<Edge<N>> adjacentEdges = getOutgoingEdges(node);
         adjacentEdges.addAll(getIngoingEdges(node));
         return adjacentEdges;
+    }
+
+    /**
+     * Returns all adjacent nodes at the given node
+     * <p>
+     * For every node {@code n} in the returned set, there exists an edge {@code e} such that {@code e.from() == node}
+     * and {@code e.to() == n}.
+     *
+     * @param node the node to get the adjacent nodes for.
+     * @return a set of all nodes that are adjacent to the given node.
+     */
+    default Set<N> getAdjacentNodes(N node) {
+        Set<N> adjacentNodes = new HashSet<>();
+
+        for (Edge<N> outgoingEdge : getOutgoingEdges(node)) {
+            adjacentNodes.add(outgoingEdge.to());
+        }
+
+        return adjacentNodes;
     }
 
     /**
@@ -89,10 +111,11 @@ public interface Graph<N> {
 
     /**
      * Creates a new {@link Graph} that does not contain any edges or nodes.
+     *
+     * @param <N> the type of the nodes in the graph.
      * @return an empty, mutable graph.
-     * @param <N>   the type of the nodes in the graph.
      */
     static <N> Graph<N> empty() {
-        return new AdjacencyGraph<>(Set.of(), Set.of(), AdjacencyList.FACTORY);
+        return Graph.of(Set.of(), Set.of());
     }
 }
