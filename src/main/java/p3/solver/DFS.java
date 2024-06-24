@@ -85,6 +85,8 @@ public class DFS<N> implements GraphTraverser<N> {
             }
         }
 
+        time++;
+
         consumer.accept(current, time);
     }
 }
