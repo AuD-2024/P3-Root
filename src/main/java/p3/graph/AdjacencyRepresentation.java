@@ -67,4 +67,21 @@ public interface AdjacencyRepresentation {
      */
     void grow();
 
+    /**
+     * A factory for creating new instances of {@link AdjacencyRepresentation}.
+     */
+    interface Factory {
+
+        /**
+         * Create a new instance of {@link AdjacencyRepresentation} for the given graph.
+         * <p>
+         * The representation is initially empty, i.e., no connections between nodes exist and the number of nodes is
+         * initially {@code size}.
+         *
+         * @param size The size of the adjacency representation
+         * @return a new instance of {@link AdjacencyRepresentation}.
+         */
+        AdjacencyRepresentation create(int size);
+    }
+
 }

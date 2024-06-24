@@ -78,4 +78,13 @@ public interface MutableGraph<N> extends Graph<N> {
         return new AdjacencyGraph<>(nodes, edges, AdjacencyList.FACTORY);
     }
 
+    /**
+     * Creates a new {@link MutableGraph} that does not contain any edges or nodes.
+     *
+     * @param <N> the type of the nodes in the graph.
+     * @return an empty, mutable graph.
+     */
+    static <N> MutableGraph<N> empty() {
+        return MutableGraph.of(Set.of(), Set.of());
+    }
 }

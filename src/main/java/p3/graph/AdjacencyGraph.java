@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * A mutable, directed, weighted graph that uses an {@link AdjacencyRepresentation} to store the graph.
@@ -49,8 +48,8 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
      * @param edges                 the initial set of edges.
      * @param representationFactory a factory that creates an {@link AdjacencyRepresentation} with the given size.
      */
-    public AdjacencyGraph(Set<N> nodes, Set<Edge<N>> edges, Function<Integer, AdjacencyRepresentation> representationFactory) {
-        representation = representationFactory.apply(nodes.size());
+    public AdjacencyGraph(Set<N> nodes, Set<Edge<N>> edges, AdjacencyRepresentation.Factory representationFactory) {
+        representation = representationFactory.create(nodes.size());
 
         int index = 0;
 
@@ -116,7 +115,7 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
         for (int adjacentIndex : adjacentIndices) {
             N toNode = indexToNode.get(adjacentIndex);
-            set.add(new EdgeImpl<>(node, toNode, getWeight(node, toNode)));
+            set.add(Edge.of(node, toNode, getWeight(node, toNode)));
         }
 
         return set;

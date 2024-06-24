@@ -2,7 +2,6 @@ package p3.graph;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * A light wrapper around a 2D array of boolean that represents an adjacency matrix.
@@ -16,9 +15,9 @@ import java.util.function.Function;
 public class AdjacencyMatrix implements AdjacencyRepresentation {
 
     /**
-     * A factory that creates an {@link AdjacencyMatrix} with the given size.
+     * A factory that creates an empty {@link AdjacencyMatrix} with the given initial size.
      */
-    public static final Function<Integer, AdjacencyRepresentation> FACTORY = AdjacencyMatrix::new;
+    public static final AdjacencyRepresentation.Factory FACTORY = AdjacencyList::new;
 
     /**
      * The underlying array that stores the adjacency matrix.
