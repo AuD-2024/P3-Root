@@ -157,7 +157,8 @@ public class DFS<N> implements GraphTraverser<N> {
         GRAY,
 
         /**
-         * The node has been discovered and finished. This means that the node and its neighbors have been fully processed.
+         * The node has been discovered and finished. This means that the node and its previously {@link #WHITE}
+         * neighbors have been fully processed.
          */
         BLACK
     }
