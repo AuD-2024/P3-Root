@@ -50,6 +50,11 @@ public class DFS<N> implements GraphTraverser<N> {
     protected int time = 0;
 
     /**
+     * Stores whether a cycle has been detected during the traversal of the graph.
+     */
+    protected boolean cyclic = false;
+
+    /**
      * Creates a new {@link DFS} for the given graph.
      *
      * @param graph the graph to traverse.
@@ -67,9 +72,24 @@ public class DFS<N> implements GraphTraverser<N> {
         for (N node : graph.getNodes()) {
             if (colors.get(node) == Color.WHITE) {
                 visit(consumer, node);
+            } else if (colors.get(node) == Color.GRAY) {
+                cyclic = true;
             }
         }
     }
+
+    /**
+     * Checks whether the graph contains negative cycles.
+     * <p>
+     * The result is only valid for the last traversal of the graph. If the graph has been changed since the last
+     * traversal, the result may be incorrect. If the graph has not been traversed yet, the result is always {@code false}.
+     *
+     * @return {@code true} if graph contains negative cycles, {@code false} otherwise.
+     */
+    public boolean isCyclic() {
+        return cyclic;
+    }
+
 
     /**
      * Initializes the DFS algorithm to its starting state, i.e., the maps are cleared, all nodes are colored white and
@@ -86,6 +106,7 @@ public class DFS<N> implements GraphTraverser<N> {
             predecessors.put(node, null);
         }
 
+        cyclic = false;
         time = 0;
     }
 
