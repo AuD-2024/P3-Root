@@ -93,6 +93,8 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
         }
 
         keys.put(root, Integer.MIN_VALUE);
+
+        remainingNodes.addAll(graph.getNodes());
     }
 
     /**
