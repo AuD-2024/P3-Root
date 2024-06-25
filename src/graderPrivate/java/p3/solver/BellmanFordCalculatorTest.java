@@ -12,8 +12,6 @@ import p3.graph.Graph;
 import p3.implementation.TestGraph;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,94 +21,50 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
+import static p3.util.AssertionUtil.assertEquals;
+import static p3.util.AssertionUtil.assertMapEquals;
+import static p3.util.AssertionUtil.assertNotNull;
+import static p3.util.AssertionUtil.assertSame;
+import static p3.util.AssertionUtil.assertTrue;
+import static p3.util.AssertionUtil.fail;
+import static p3.util.ReflectionUtil.setDistances;
+import static p3.util.ReflectionUtil.setPredecessors;
 
 public class BellmanFordCalculatorTest extends P3_TestBase {
+
+    @Override
+    public String getTestedClassName() {
+        return "BellmanFordPathCalculator";
+    }
+
+    @Override
+    public List<String> getOptionalParams() {
+        return List.of("nodes", "edges", "start", "predecessors", "distances", "expectedPredecessors", "expectedDistances");
+    }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "bellmanford/initSSSP.json")
     public void testInitSSSP(JsonParameterSet params) throws ReflectiveOperationException {
-        List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
-        int start = params.getInt("start");
-        List<Integer> predecessorList = params.get("predecessors");
-        List<Integer> distanceList = params.get("distances");
-        List<Integer> expectedPredecessorList = params.get("expectedPredecessors");
-        List<Integer> expectedDistanceList = params.get("expectedDistances");
+        BellmanFordPathCalculator<Integer> calculator = createCalculator(params);
+        Context.Builder<?> context = createContext(params, "initSSSP");
 
-        Map<Integer, Integer> predecessors = createPredecessorMap(predecessorList, nodes);
-        Map<Integer, Integer> distances = createDistanceMap(distanceList, nodes);
+        call(() -> calculator.initSSSP(params.getInt("start")), context, "initSSSP");
 
-        Map<Integer, Integer> expectedPredecessors = createPredecessorMap(expectedPredecessorList, nodes);
-        Map<Integer, Integer> expectedDistances = createDistanceMap(expectedDistanceList, nodes);
-
-        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
-        BellmanFordPathCalculator<Integer> calculator = new BellmanFordPathCalculator<>(graph);
-
-        setPredecessors(calculator, predecessors);
-        setDistances(calculator, distances);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("BellmanFordPathCalculator.initSSSP")
-            .add("nodes", nodes)
-            .add("start node", start)
-            .add("previous predecessors", predecessors.toString())
-            .add("previous distances", distances.toString())
-            .add("expected predecessors", expectedPredecessors.toString())
-            .add("expected distances", expectedDistances.toString());
-
-        call(() -> calculator.initSSSP(start), context.build(), result -> "initSSSP should not throw an exception");
-
-        context.add("actual predecessors", predecessors.toString());
-        context.add("actual distances", distances.toString());
-
-        assertMapEquals(expectedPredecessors, predecessors, context.build(), "predecessor");
-        assertMapEquals(expectedDistances, distances, context.build(), "distance");
+        assertMapsCorrect(params, calculator, context);
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "bellmanford/relax.json")
     public void testRelax(JsonParameterSet params) throws ReflectiveOperationException {
-        List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
-        int from = params.getInt("from");
-        int to = params.getInt("to");
-        int weight = params.getInt("weight");
-        List<Integer> predecessorList = params.get("predecessors");
-        List<Integer> distanceList = params.get("distances");
-        List<Integer> expectedPredecessorList = params.get("expectedPredecessors");
-        List<Integer> expectedDistanceList = params.get("expectedDistances");
+        Edge<Integer> edge = Edge.of(params.getInt("from"), params.getInt("to"), params.getInt("weight"));
 
-        Edge<Integer> edge = Edge.of(from, to, weight);
+        BellmanFordPathCalculator<Integer> calculator = createCalculator(params);
+        Context.Builder<?> context = createContext(params, "relax", Map.of("edge to relax", edge));
 
-        Map<Integer, Integer> predecessors = createPredecessorMap(predecessorList, nodes);
-        Map<Integer, Integer> distances = createDistanceMap(distanceList, nodes);
+        call(() -> calculator.relax(edge), context, "relax");
 
-        Map<Integer, Integer> expectedPredecessors = createPredecessorMap(expectedPredecessorList, nodes);
-        Map<Integer, Integer> expectedDistances = createDistanceMap(expectedDistanceList, nodes);
-
-        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
-        BellmanFordPathCalculator<Integer> calculator = new BellmanFordPathCalculator<>(graph);
-
-        setPredecessors(calculator, predecessors);
-        setDistances(calculator, distances);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("BellmanFordPathCalculator.relax")
-            .add("nodes", nodes)
-            .add("edgeToRelax", edge)
-            .add("previous predecessors", predecessors.toString())
-            .add("previous distances", distances.toString())
-            .add("expected predecessors", expectedPredecessors.toString())
-            .add("expected distances", expectedDistances.toString());
-
-        call(() -> calculator.relax(edge), context.build(), result -> "relax should not throw an exception");
-
-        context.add("actual predecessors", predecessors.toString());
-        context.add("actual distances", distances.toString());
-
-        assertMapEquals(expectedPredecessors, predecessors, context.build(), "predecessor");
-        assertMapEquals(expectedDistances, distances, context.build(), "distance");
+        assertMapsCorrect(params, calculator, context);
     }
 
     @SuppressWarnings("unchecked")
@@ -118,24 +72,19 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     @JsonParameterSetTest(value = "bellmanford/processGraph.json")
     public void testProcessGraph(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
+        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
 
-        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
-        BellmanFordPathCalculator<Integer> calculator = spy(new BellmanFordPathCalculator<>(graph));
+        BellmanFordPathCalculator<Integer> calculator = createCalculator(params, true);
 
         ArgumentCaptor<Edge<Integer>> edgeCaptor = ArgumentCaptor.forClass(Edge.class);
         doNothing().when(calculator).relax(edgeCaptor.capture());
 
-        Context.Builder<?> context = contextBuilder()
-            .subject("BellmanFordPathCalculator.processGraph")
-            .add("nodes", nodes)
-            .add("edges", edges);
+        Context.Builder<?> context = createContext(params, "processGraph");
 
-        call(calculator::processGraph, context.build(), result -> "processGraph should not throw an exception");
+        call(calculator::processGraph, context, "processGraph");
 
         int expectedCount = edges.size() * (nodes.size() - 1);
-        assertEquals(expectedCount, edgeCaptor.getAllValues().size(), context.build(),
-            result -> "The relax method should be called (nodes.size - 1) * edges.size times");
+        assertEquals(expectedCount, edgeCaptor.getAllValues().size(), context, "The relax method should be called (nodes.size - 1) * edges.size times");
 
         List<Edge<Integer>> currentIterationEdges = new ArrayList<>();
         for (int i = 0; i < expectedCount; i++) {
@@ -144,15 +93,14 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
             if (currentIterationEdges.size() == edges.size()) {
                 for (Edge<Integer> edge : edges) {
                     int iteration = i / edges.size();
-                    assertTrue(currentIterationEdges.contains(edge), context.build(),
-                        result -> "The edges in iteration %d (relax invocation %d to %d) do not contain edge %s"
-                            .formatted(iteration, iteration * edges.size(), (iteration + 1) * edges.size(), edge));
+                    assertTrue(currentIterationEdges.contains(edge), context, "The edges in iteration %d (relax invocation %d to %d) do not contain edge %s"
+                        .formatted(iteration, iteration * edges.size(), (iteration + 1) * edges.size(), edge));
                 }
             }
         }
 
-        assertTrue(getPredecessors(calculator).isEmpty(), context.build(), result -> "The predecessors map should not change");
-        assertTrue(getDistances(calculator).isEmpty(), context.build(), result -> "The distances map should not change");
+        assertTrue(calculator.predecessors.isEmpty(), context, "The predecessors map should not change");
+        assertTrue(calculator.distances.isEmpty(), context, "The distances map should not change");
     }
 
     @ParameterizedTest
@@ -167,17 +115,17 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
         testCheckNegativeCycles(params, true);
     }
 
+    // TODO bleiben wir dabei das set returned wird?
     private void testCheckNegativeCycles(JsonParameterSet params, boolean exact) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
-        List<Integer> predecessorList = params.get("predecessors");
-        List<Integer> distanceList = params.get("distances");
-        Set<Edge<Integer>> expectedEdges = listToEdgeSet(params.get("expectedEdges"));
+        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
 
-        Map<Integer, Integer> predecessors = createPredecessorMap(predecessorList, nodes);
-        Map<Integer, Integer> distances = createDistanceMap(distanceList, nodes);
+        Map<Integer, Integer> predecessors = createPredecessorMap(params.get("predecessors"), nodes);
+        Map<Integer, Integer> distances = createDistanceMap(params.get("distances"), nodes);
 
-        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
+        Set<Edge<Integer>> expectedEdges = listToEdgeSet(params.get("expectedEdges"), nodes);
+
+        Graph<Integer> graph = new TestGraph<>(nodes, edges);
         BellmanFordPathCalculator<Integer> calculator = new BellmanFordPathCalculator<>(graph);
 
         setPredecessors(calculator, predecessors);
@@ -191,26 +139,25 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
             .add("distances", distances)
             .add("expectedEdges", expectedEdges);
 
-        Set<Edge<Integer>> actualEdges = callObject(calculator::checkNegativeCycles, context.build(),
-            result -> "checkNegativeCycles should not throw an exception");
+        Set<Edge<Integer>> actualEdges = callObject(calculator::checkNegativeCycles, context, "checkNegativeCycles");
 
         context.add("actualEdges", actualEdges);
 
-        assertNotNull(actualEdges, context.build(), result -> "The method should not return null");
+        assertNotNull(actualEdges, context, "The method should not return null");
 
         if (expectedEdges.isEmpty()) {
-            assertTrue(actualEdges.isEmpty(), context.build(), result -> "The method should return an empty set");
+            assertTrue(actualEdges.isEmpty(), context, "The method should return an empty set");
         } else {
             if (exact) {
-                assertEquals(expectedEdges.size(), actualEdges.size(), context.build(), result -> "The returned set does not have the correct size");
+                assertEquals(expectedEdges.size(), actualEdges.size(), context, "The returned set does not have the correct size");
 
                 for (Edge<Integer> edge : expectedEdges) {
-                    assertTrue(actualEdges.contains(edge), context.build(), result -> "The returned set does not contain the edge %s".formatted(edge));
+                    assertTrue(actualEdges.contains(edge), context, "The returned set does not contain the edge %s".formatted(edge));
                     assertEquals(edge.weight(), actualEdges.stream().filter(e -> e.equals(edge)).findFirst().get().weight(),
-                        context.build(), result -> "The returned edge %s has the wrong weight".formatted(edge));
+                        context, "The returned edge %s has the wrong weight".formatted(edge));
                 }
             } else {
-                assertTrue(!actualEdges.isEmpty(), context.build(), result -> "The returned set should not be empty");
+                assertTrue(!actualEdges.isEmpty(), context, "The returned set should not be empty");
             }
         }
     }
@@ -219,15 +166,17 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     @JsonParameterSetTest(value = "bellmanford/calculatePath.json")
     public void testCalculatePath(JsonParameterSet params) {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"));
+        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+
         int start = params.getInt("start");
         int end = params.getInt("end");
-        Set<Edge<Integer>> negativeCycleEdges = listToEdgeSet(params.get("negativeCycleEdges"));
+
+        Set<Edge<Integer>> negativeCycleEdges = listToEdgeSet(params.get("negativeCycleEdges"), nodes);
         boolean shouldThrowException = params.getBoolean("shouldThrowException");
 
         List<Edge<Integer>> resultList = new ArrayList<>();
 
-        Graph<Integer> graph = new TestGraph<>(new HashSet<>(nodes), edges);
+        Graph<Integer> graph = new TestGraph<>(nodes, edges);
         BellmanFordPathCalculator<Integer> calculator = spy(new BellmanFordPathCalculator<>(graph));
 
         ArgumentCaptor<Integer> initSSSPCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -241,19 +190,18 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
 
         InOrder inOrder = inOrder(calculator);
 
-        Context context = contextBuilder()
+        Context.Builder<?> context = contextBuilder()
             .subject("BellmanFordPathCalculator.calculatePath")
             .add("nodes", nodes)
             .add("edges", edges)
             .add("negativeCycleEdges", negativeCycleEdges)
-            .add("shouldThrowException", shouldThrowException)
-            .build();
+            .add("shouldThrowException", shouldThrowException);
 
         boolean cycleExceptionThrown = false;
 
         try {
             List<Integer> actual = calculator.calculatePath(start, end);
-            assertSame(resultList, actual, context, result -> "The method should return the result of reconstructPath");
+            assertSame(resultList, actual, context, "The method should return the result of reconstructPath");
         } catch (CycleException e) {
             cycleExceptionThrown = true;
         } catch (AssertionError e) {
@@ -261,57 +209,56 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
         } catch (Throwable e) {
             call(() -> {
                 throw e;
-            }, context, result -> "The method should not throw any other exception than CycleException");
+            }, context, "The method should not throw any other exception than CycleException");
         }
 
         if (cycleExceptionThrown && !shouldThrowException) {
-            fail(context, result -> "The method should not throw a CycleException but it did");
+            fail(context, "The method should not throw a CycleException but it did");
         } else if (!cycleExceptionThrown && shouldThrowException) {
-            fail(context, result -> "The method should throw a CycleException but it did not");
+            fail(context, "The method should throw a CycleException but it did not");
         }
 
         checkVerify(() -> inOrder.verify(calculator).initSSSP(any()), context, "initSSSP should be called exactly once");
-        assertEquals(start, initSSSPCaptor.getValue(), context, result -> "initSSSP should be called with the start node");
+        assertEquals(start, initSSSPCaptor.getValue(), context, "initSSSP should be called with the start node");
 
         checkVerify(() -> inOrder.verify(calculator).processGraph(), context, "processGraph should be called exactly once after initSSSP");
         checkVerify(() -> inOrder.verify(calculator).checkNegativeCycles(), context, "checkNegativeCycles should be called exactly once after processGraph");
 
         if (!shouldThrowException) {
             checkVerify(() -> inOrder.verify(calculator).reconstructPath(any(), any()), context, "reconstructPath should be called exactly once after checkNegativeCycles");
-            assertEquals(start, reconstructPathStartCaptor.getValue(), context, result -> "reconstructPath should be called with the start node as the first parameter");
-            assertEquals(end, reconstructPathEndCaptor.getValue(), context, result -> "reconstructPath should be called with the end node as the second parameter");
+            assertEquals(start, reconstructPathStartCaptor.getValue(), context, "reconstructPath should be called with the start node as the first parameter");
+            assertEquals(end, reconstructPathEndCaptor.getValue(), context, "reconstructPath should be called with the end node as the second parameter");
         }
 
     }
 
-    private void assertMapEquals(Map<Integer, Integer> expected, Map<Integer, Integer> actual, Context context, String mapName) {
-        assertEquals(expected.size(), actual.size(), context, result -> "The size of the %s map is not correct".formatted(mapName));
-
-        for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertTrue(actual.containsKey(entry.getKey()), context, result -> "%s map should contain key %d".formatted(mapName, entry.getKey()));
-            assertEquals(entry.getValue(), actual.get(entry.getKey()), context, result -> "%s map contains the wrong value for key %d".formatted(mapName, entry.getKey()));
-        }
+    private BellmanFordPathCalculator<Integer> createCalculator(JsonParameterSet params) throws ReflectiveOperationException {
+        return createCalculator(params, false);
     }
 
-    private Map<Integer, Integer> createPredecessorMap(List<Integer> predecessorList, List<Integer> nodes) {
-        Map<Integer, Integer> predecessors = new HashMap<>();
+    private BellmanFordPathCalculator<Integer> createCalculator(JsonParameterSet params, boolean spy) throws ReflectiveOperationException {
+        List<Integer> nodes = params.get("nodes");
+        Set<Edge<Integer>> edges = params.availableKeys().contains("edges") ? listToEdgeSet(params.get("edges"), nodes) : Set.of();
 
-        for (int i = 0; i < nodes.size(); i++) {
-            predecessors.put(nodes.get(i), predecessorList.get(i));
+        Graph<Integer> graph = new TestGraph<>(nodes, edges);
+        BellmanFordPathCalculator<Integer> calculator = spy ? spy(new BellmanFordPathCalculator<>(graph)) : new BellmanFordPathCalculator<>(graph);
+
+        if (params.availableKeys().contains("predecessors")) {
+            setPredecessors(calculator, createPredecessorMap(params.get("predecessors"), nodes));
+        }
+        if (params.availableKeys().contains("distances")) {
+            setDistances(calculator, createDistanceMap(params.get("distances"), nodes));
         }
 
-        return predecessors;
+        return calculator;
     }
 
-    private Map<Integer, Integer> createDistanceMap(List<Integer> distanceList, List<Integer> nodes) {
-        Map<Integer, Integer> distances = new HashMap<>();
+    private void assertMapsCorrect(JsonParameterSet params, BellmanFordPathCalculator<Integer> calculator, Context.Builder<?> context) {
+        context.add("actual predecessors", calculator.predecessors.toString());
+        context.add("actual distances", calculator.distances.toString());
 
-        for (int i = 0; i < nodes.size(); i++) {
-            Integer distance = distanceList.get(i);
-            distances.put(nodes.get(i), distance == null ? Integer.MAX_VALUE : distance);
-        }
-
-        return distances;
+        assertMapEquals(createPredecessorMap(params.get("expectedPredecessors"), params.get("nodes")), calculator.predecessors, context, "predecessor");
+        assertMapEquals(createDistanceMap(params.get("expectedDistances"), params.get("nodes")), calculator.distances, context, "distance");
     }
 
 }

@@ -5,10 +5,11 @@ import p3.graph.AdjacencyRepresentation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TestAdjacencyRepresentation implements AdjacencyRepresentation {
 
-    private Map<Integer, Map<Integer, Boolean>> adjacencyMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, Boolean>> adjacencyMap = new HashMap<>();
 
     private int size = 0;
 
@@ -53,7 +54,7 @@ public class TestAdjacencyRepresentation implements AdjacencyRepresentation {
         return adjacencyMap.getOrDefault(index, Map.of()).entrySet().stream()
                 .filter(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
     }
 
     @Override

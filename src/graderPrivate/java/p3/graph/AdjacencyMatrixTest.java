@@ -8,114 +8,76 @@ import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
 import p3.P3_TestBase;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertTrue;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.call;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.callObject;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
+import static p3.util.AssertionUtil.assertEquals;
+import static p3.util.AssertionUtil.assertSetEquals;
+import static p3.util.ReflectionUtil.getAdjacencyMatrix;
+import static p3.util.ReflectionUtil.setAdjacencyMatrix;
 
 @TestForSubmission
 public class AdjacencyMatrixTest extends P3_TestBase {
 
+    @Override
+    public String getTestedClassName() {
+        return "AdjacencyMatrix";
+    }
+
+    @Override
+    public List<String> getOptionalParams() {
+        return List.of("from", "to", "matrix", "index", "expected");
+    }
+
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencymatrix/addEdge.json")
-    public void testAddEdge(JsonParameterSet params) {
-        List<List<Boolean>> matrixList = params.get("adjacencyMatrix");
-        List<List<Boolean>> expectedMatrixList = params.get("expectedAdjacencyMatrix");
-        int from = params.getInt("from");
-        int to = params.getInt("to");
+    public void testAddEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        boolean[][] expected = listToMatrix(params.get("expectedAdjacencyMatrix"));
 
-        boolean[][] matrix = listToMatrix(matrixList);
-        boolean[][] expected = listToMatrix(expectedMatrixList);
+        Context.Builder<?> context = createContext(params, "addEdge", Map.of("expected matrix", Arrays.deepToString(expected)));
+        AdjacencyMatrix adjacencyMatrix = createAdjacencyMatrix(params);
 
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyMatrix.addEdge")
-            .add("previous matrix", Arrays.deepToString(matrix))
-            .add("from", from)
-            .add("to", to)
-            .add("expected matrix", Arrays.deepToString(expected));
+        call(() -> adjacencyMatrix.addEdge(params.getInt("from"), params.getInt("to")), context, "addEdge");
 
-        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(matrix);
+        context.add("actual matrix", Arrays.deepToString(getAdjacencyMatrix(adjacencyMatrix)));
 
-        call(() -> adjacencyMatrix.addEdge(from, to), context.build(), result -> "AdjacencyMatrix.addEdge should not throw an exception");
-
-        context.add("actual matrix", Arrays.deepToString(matrix));
-
-        assertArrayDeepEquals(expected, matrix, context.build());
+        assertArrayDeepEquals(expected, getAdjacencyMatrix(adjacencyMatrix), context);
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencymatrix/hasEdge.json")
-    public void testHasEdge(JsonParameterSet params) {
-        List<List<Boolean>> matrixList = params.get("adjacencyMatrix");
-        boolean expected = params.getBoolean("expected");
-        int from = params.getInt("from");
-        int to = params.getInt("to");
+    public void testHasEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        Context.Builder<?> context = createContext(params, "hasEdge");
+        AdjacencyMatrix adjacencyMatrix = createAdjacencyMatrix(params);
 
-        boolean[][] matrix = listToMatrix(matrixList);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyMatrix.hasEdge")
-            .add("matrix", Arrays.deepToString(matrix))
-            .add("from", from)
-            .add("to", to)
-            .add("expected", expected);
-
-        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(matrix);
-
-        boolean actual = callObject(() -> adjacencyMatrix.hasEdge(from, to), context.build(),
-            result -> "AdjacencyMatrix.hasEdge should not throw an exception");
+        boolean actual = callObject(() -> adjacencyMatrix.hasEdge(params.getInt("from"), params.getInt("to")), context, "hasEdge");
 
         context.add("actual", actual);
 
-        assertEquals(expected, actual, context.build(), result -> "The method did not return the correct value");
-
-        assertArrayDeepEquals(listToMatrix(matrixList), matrix, context.build());
+        assertEquals(params.getBoolean("expected"), actual, context, "The method did not return the correct value");
+        assertArrayDeepEquals(listToMatrix(params.get("adjacencyMatrix")), getAdjacencyMatrix(adjacencyMatrix), context);
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencymatrix/getAdjacentIndices.json")
-    public void testGetAdjacentIndices(JsonParameterSet params) {
-        List<List<Boolean>> matrixList = params.get("adjacencyMatrix");
-        List<Integer> expected = params.get("expected");
-        int index = params.getInt("index");
+    public void testGetAdjacentIndices(JsonParameterSet params) throws ReflectiveOperationException {
+        Context.Builder<?> context = createContext(params, "getAdjacentIndices");
+        AdjacencyMatrix adjacencyMatrix = createAdjacencyMatrix(params);
 
-        boolean[][] matrix = listToMatrix(matrixList);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyMatrix.getAdjacentIndices")
-            .add("matrix", Arrays.deepToString(matrix))
-            .add("index", index)
-            .add("expected", expected);
-
-        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(matrix);
-
-        Set<Integer> actual = callObject(() -> adjacencyMatrix.getAdjacentIndices(index), context.build(),
-            result -> "AdjacencyMatrix.getAdjacentIndices should not throw an exception");
+        Set<Integer> actual = callObject(() -> adjacencyMatrix.getAdjacentIndices(params.getInt("index")), context, "getAdjacentIndices");
 
         context.add("actual", actual);
 
-        assertEquals(expected.size(), actual.size(), context.build(), result -> "The returned set does not have the correct size");
-
-        for (int i : expected) {
-            assertTrue(actual.contains(i), context.build(), result -> "The returned set does not contain the value %d".formatted(i));
-        }
-
-        assertArrayDeepEquals(listToMatrix(matrixList), matrix, context.build());
+        assertSetEquals(new HashSet<>(params.get("expected")), actual, context, "returned");
+        assertArrayDeepEquals(listToMatrix(params.get("adjacencyMatrix")), getAdjacencyMatrix(adjacencyMatrix), context);
     }
 
-    private void assertArrayDeepEquals(boolean[][] expected, boolean[][] actual, Context context) {
-
+    private void assertArrayDeepEquals(boolean[][] expected, boolean[][] actual, Context.Builder<?> context) {
         for (int i = 0; i < expected.length; i++) {
-            int finalI = i;
-
             for (int j = 0; j < expected.length; j++) {
-                int finalJ = j;
-                assertEquals(expected[i][j], actual[i][j], context,
-                    result -> "The value at index (%d, %d) is not correct".formatted(finalI, finalJ));
+                assertEquals(expected[i][j], actual[i][j], context, "The value at index (%d, %d) is not correct".formatted(i, j));
             }
         }
     }
@@ -130,6 +92,13 @@ public class AdjacencyMatrixTest extends P3_TestBase {
         }
 
         return matrix;
+    }
+
+    private AdjacencyMatrix createAdjacencyMatrix(JsonParameterSet params) throws ReflectiveOperationException {
+        boolean[][] matrix = listToMatrix(params.get("adjacencyMatrix"));
+        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(matrix.length);
+        setAdjacencyMatrix(adjacencyMatrix, matrix);
+        return adjacencyMatrix;
     }
 
 }

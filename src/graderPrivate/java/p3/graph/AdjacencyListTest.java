@@ -7,115 +7,82 @@ import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
 import p3.P3_TestBase;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertTrue;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.call;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.callObject;
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
+import static p3.util.AssertionUtil.assertEquals;
+import static p3.util.AssertionUtil.assertSetEquals;
+import static p3.util.ReflectionUtil.getAdjacencyList;
+import static p3.util.ReflectionUtil.setAdjacencyList;
 
 public class AdjacencyListTest extends P3_TestBase {
 
+    @Override
+    public String getTestedClassName() {
+        return "AdjacencyList";
+    }
+
+    @Override
+    public List<String> getOptionalParams() {
+        return List.of("from", "to", "index", "adjacencyList", "expected");
+    }
+
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencylist/addEdge.json")
-    public void testAddEdge(JsonParameterSet params) {
-        List<List<Integer>> inputAdjacencyList = params.get("adjacencyList");
-        List<List<Integer>> expectedAdjacencyList = params.get("expectedAdjacencyList");
-        int from = params.getInt("from");
-        int to = params.getInt("to");
+    public void testAddEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        LinkedList<Integer>[] expectedList = listToAdjacencyList(params.get("expectedAdjacencyList"));
 
-        LinkedList<Integer>[] actualList = listToAdjacencyList(inputAdjacencyList);
-        LinkedList<Integer>[] expectedList = listToAdjacencyList(expectedAdjacencyList);
+        Context.Builder<?> context = createContext(params, "addEdge", Map.of("expected adjacencyList", Arrays.toString(expectedList)));
+        AdjacencyList adjacencyList = createAdjacencyList(params);
 
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyList.addEdge")
-            .add("previous adjacencyList", Arrays.toString(actualList))
-            .add("from", from)
-            .add("to", to)
-            .add("expected adjacencyList", Arrays.toString(expectedList));
+        call(() -> adjacencyList.addEdge(params.getInt("from"), params.getInt("to")), context, "addEdge");
 
-        AdjacencyList adjacencyList = new AdjacencyList(actualList);
+        context.add("actual adjacencyList", Arrays.toString(getAdjacencyList(adjacencyList)));
 
-        call(() -> adjacencyList.addEdge(from, to), context.build(), result -> "AdjacencyList.addEdge should not throw an exception");
-
-        context.add("actual adjacencyList", Arrays.toString(actualList));
-
-        assertAdjacencyListEquals(expectedList, actualList, context.build());
+        assertAdjacencyListEquals(expectedList, getAdjacencyList(adjacencyList), context);
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencylist/hasEdge.json")
-    public void testHasEdge(JsonParameterSet params) {
-        List<List<Integer>> inputAdjacencyList = params.get("adjacencyList");
-        boolean expected = params.getBoolean("expected");
-        int from = params.getInt("from");
-        int to = params.getInt("to");
+    public void testHasEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        Context.Builder<?> context = createContext(params, "hasEdge");
+        AdjacencyList adjacencyList = createAdjacencyList(params);
 
-        LinkedList<Integer>[] actualList = listToAdjacencyList(inputAdjacencyList);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyList.hasEdge")
-            .add("adjacencyList", Arrays.toString(actualList))
-            .add("from", from)
-            .add("to", to)
-            .add("expected", expected);
-
-        AdjacencyList adjacencyList = new AdjacencyList(actualList);
-
-        boolean actual = callObject(() -> adjacencyList.hasEdge(from, to), context.build(), result -> "AdjacencyList.addEdge should not throw an exception");
+        boolean actual = callObject(() -> adjacencyList.hasEdge(params.getInt("from"), params.getInt("to")), context, "addEdge");
 
         context.add("actual", actual);
 
-        assertEquals(expected, actual, context.build(), result -> "The method did not return the correct value");
-
-        assertAdjacencyListEquals(listToAdjacencyList(inputAdjacencyList), actualList, context.build());
+        assertEquals(params.getBoolean("expected"), actual, context, "The method did not return the correct value");
+        assertAdjacencyListEquals(listToAdjacencyList(params.get("adjacencyList")), getAdjacencyList(adjacencyList), context);
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencylist/getAdjacentIndices.json")
-    public void testGetAdjacentIndices(JsonParameterSet params) {
-        List<List<Integer>> inputAdjacencyList = params.get("adjacencyList");
-        List<Integer> expected = params.get("expected");
-        int index = params.getInt("index");
+    public void testGetAdjacentIndices(JsonParameterSet params) throws ReflectiveOperationException {
+        Context.Builder<?> context = createContext(params, "getAdjacentIndices");
+        AdjacencyList adjacencyList = createAdjacencyList(params);
 
-        LinkedList<Integer>[] actualList = listToAdjacencyList(inputAdjacencyList);
-
-        Context.Builder<?> context = contextBuilder()
-            .subject("AdjacencyList.hasEdge")
-            .add("adjacencyList", Arrays.toString(actualList))
-            .add("index", index)
-            .add("expected", expected);
-
-        AdjacencyList adjacencyList = new AdjacencyList(actualList);
-
-        Set<Integer> actual = callObject(() -> adjacencyList.getAdjacentIndices(index), context.build(),
-            result -> "AdjacencyList.getAdjacentIndices should not throw an exception");
+        Set<Integer> actual = callObject(() -> adjacencyList.getAdjacentIndices(params.getInt("index")), context, "getAdjacentIndices");
 
         context.add("actual", actual);
 
-        assertEquals(expected.size(), actual.size(), context.build(), result -> "The returned set does not have the correct size");
-
-        for (int i : expected) {
-            assertTrue(actual.contains(i), context.build(), result -> "The returned set does not contain the value %d".formatted(i));
-        }
+        assertSetEquals(new HashSet<>(params.get("expected")), actual, context, "The method did not return the correct value");
+        assertAdjacencyListEquals(listToAdjacencyList(params.get("adjacencyList")), getAdjacencyList(adjacencyList), context);
     }
 
-    private void assertAdjacencyListEquals(LinkedList<Integer>[] expected, LinkedList<Integer>[] actual, Context context) {
+    private void assertAdjacencyListEquals(LinkedList<Integer>[] expected, LinkedList<Integer>[] actual, Context.Builder<?> context) {
         for (int i = 0; i < expected.length; i++) {
-            int finalI = i;
             LinkedList<Integer> expectedList = expected[i];
             LinkedList<Integer> actualList = actual[i];
 
-            assertEquals(expectedList.size(), actualList.size(), context,
-                result -> "The size of the linked list at index %d is not correct".formatted(finalI));
+            assertEquals(expectedList.size(), actualList.size(), context, "The size of the linked list at index %d is not correct".formatted(i));
 
             for (int j = 0; j < expectedList.size(); j++) {
-                int finalJ = j;
-                assertEquals(expectedList.get(j), actualList.get(j), context,
-                    result -> "The element at index %d of the linked list at index %d is not correct".formatted(finalJ, finalI));
+                assertEquals(expectedList.get(j), actualList.get(j), context, "The element at index %d of the linked list at index %d is not correct".formatted(j, i));
             }
         }
     }
@@ -128,6 +95,13 @@ public class AdjacencyListTest extends P3_TestBase {
             adjacencyList[i] = new LinkedList<>(list.get(i));
         }
 
+        return adjacencyList;
+    }
+
+    private AdjacencyList createAdjacencyList(JsonParameterSet params) throws ReflectiveOperationException {
+        LinkedList<Integer>[] list = listToAdjacencyList(params.get("adjacencyList"));
+        AdjacencyList adjacencyList = new AdjacencyList(list.length);
+        setAdjacencyList(adjacencyList, list);
         return adjacencyList;
     }
 

@@ -106,7 +106,7 @@ public interface Graph<N> {
      * @return a new, immutable graph with the given nodes and edges.
      */
     static <N> Graph<N> of(Set<N> nodes, Set<Edge<N>> edges) {
-        return new AdjacencyGraph<>(nodes, edges, AdjacencyList.FACTORY);
+        return new BasicGraph<>(nodes, edges);
     }
 
     /**

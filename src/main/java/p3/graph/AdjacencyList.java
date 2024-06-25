@@ -41,15 +41,6 @@ public class AdjacencyList implements AdjacencyRepresentation {
         }
     }
 
-    /**
-     * Constructs a new {@link AdjacencyList} with the given adjacencyList.
-     *
-     * @param adjacencyList The initial adjacencyList.
-     */
-    public AdjacencyList(LinkedList<Integer>[] adjacencyList) {
-        this.adjacencyList = adjacencyList;
-    }
-
     @Override
     public void addEdge(int from, int to) {
         checkIndex(to);
