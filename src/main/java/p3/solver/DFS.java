@@ -72,8 +72,6 @@ public class DFS<N> implements GraphTraverser<N> {
         for (N node : graph.getNodes()) {
             if (colors.get(node) == Color.WHITE) {
                 visit(consumer, node);
-            } else if (colors.get(node) == Color.GRAY) {
-                cyclic = true;
             }
         }
     }
@@ -129,6 +127,8 @@ public class DFS<N> implements GraphTraverser<N> {
             if (colors.get(neighbor) == Color.WHITE) {
                 predecessors.put(neighbor, current);
                 visit(consumer, neighbor);
+            }  else if (colors.get(neighbor) == Color.GRAY) {
+                cyclic = true;
             }
         }
 
