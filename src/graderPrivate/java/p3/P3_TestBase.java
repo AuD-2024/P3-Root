@@ -65,7 +65,19 @@ public abstract class P3_TestBase {
         }
     }
 
-    public static Set<Edge<Integer>> listToEdgeSet(List<List<Integer>> edges, List<Integer> nodes) {
+    public static Set<Edge<Integer>> getEdges(JsonParameterSet params) {
+        return getEdges(params, "edges");
+    }
+
+    public static Set<Edge<Integer>> getEdges(JsonParameterSet params, String key) {
+
+        if (!params.availableKeys().contains(key)) {
+            return Set.of();
+        }
+
+        List<Integer> nodes = params.get("nodes");
+        List<List<Integer>> edges = params.get(key);
+
         Set<Edge<Integer>> edgeSet = new HashSet<>();
 
         for (int i = 0; i < edges.size(); i++) {

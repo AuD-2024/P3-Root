@@ -7,6 +7,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
 import p3.P3_TestBase;
+import p3.graph.Edge;
 import p3.graph.Graph;
 
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class DFSTest extends P3_TestBase {
     @Override
     public List<String> getOptionalParams() {
         return List.of("nodes", "edges", "current", "colors", "time", "cyclic", "discoveryTimes", "finishingTimes", "predecessors",
-            "expectedVisitedCount", "expectedVisitedNeighbors", "expectedColors", "expectedDiscoveryTimes", "expectedFinishingTimes", "expectedPredecessors");
+            "expectedVisitedCount", "expectedColors", "expectedDiscoveryTimes", "expectedFinishingTimes", "expectedPredecessors", "hasCycle");
     }
 
     @SuppressWarnings("unchecked")
@@ -110,7 +111,6 @@ public class DFSTest extends P3_TestBase {
         testVisit(params);
     }
 
-    //TODO add test cases
     @ParameterizedTest
     @JsonParameterSetTest(value = "dfs/visit.json")
     public void testVisit(JsonParameterSet params) {
@@ -131,13 +131,29 @@ public class DFSTest extends P3_TestBase {
         Map<Integer, DFS.Color> expectedColors = nodeListToMap(params, "expectedColors", value -> DFS.Color.valueOf((String) value));
         Map<Integer, Integer> expectedDiscoveryTimes = mapToNodeMap(params, "expectedDiscoveryTimes", value -> (Integer) value);
         Map<Integer, Integer> expectedFinishingTimes = mapToNodeMap(params, "expectedFinishingTimes", value -> (Integer) value);
-        Map<Integer, Integer> expectedPredecessors = mapToNodeMap(params, "expectedPredecessors", value -> (Integer) value);
+        Map<Integer, Integer> expectedPredecessors = createPredecessorMap(params, "expectedPredecessors");
 
         assertMapEquals(expectedColors, dfs.colors, context, "colors");
         assertMapEquals(expectedDiscoveryTimes, dfs.discoveryTimes, context, "discoveryTimes");
         assertMapEquals(expectedFinishingTimes, dfs.finishTimes, context, "finishTimes");
         assertMapEquals(expectedPredecessors, dfs.predecessors, context, "predecessors");
         assertMapEquals(expectedFinishingTimes, consumerTimes, context, "consumer values");
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "dfs/cyclic.json")
+    public void testCyclic(JsonParameterSet params) {
+        DFS<Integer> dfs = createDFS(params);
+        Context.Builder<?> context = createContext(params, "isCyclic");
+
+        ObjIntConsumer<Integer> emptyConsumer = (node, time) -> {};
+
+        call(() -> dfs.traverse(emptyConsumer), context, "isCyclic");
+
+        context.add("actual cyclic", dfs.isCyclic());
+
+        assertEquals(params.get("hasCycle"), dfs.isCyclic(), context,
+                "The method isCyclic() did not return the correct value after calling traverse()");
     }
 
     private DFS<Integer> createDFS(JsonParameterSet params) {
@@ -147,7 +163,9 @@ public class DFSTest extends P3_TestBase {
     private DFS<Integer> createDFS(JsonParameterSet params, boolean spy) {
         List<Integer> nodes = params.get("nodes");
 
-        DFS<Integer> dfs = spy ? spy(new DFS<>(Graph.of(new HashSet<>(nodes), Set.of()))) : new DFS<>(Graph.of(new HashSet<>(nodes), Set.of()));
+        Set<Edge<Integer>> edges = getEdges(params);
+
+        DFS<Integer> dfs = spy ? spy(new DFS<>(Graph.of(new HashSet<>(nodes), edges))) : new DFS<>(Graph.of(new HashSet<>(nodes), edges));
 
         if (params.availableKeys().contains("colors")) {
             dfs.colors.putAll(nodeListToMap(params, "colors", value -> DFS.Color.valueOf((String) value)));

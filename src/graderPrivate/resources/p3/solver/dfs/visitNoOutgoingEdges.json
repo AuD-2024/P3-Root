@@ -10,10 +10,7 @@
     "current": 0,
     "time": 3,
     "colors": ["WHITE","WHITE","WHITE","WHITE"],
-    "discoveryTimes": [],
-    "finishingTimes": [],
-    "predecessors": [],
-    "expectedVisitedNeighbors": [],
+    "predecessors": [null, null, null, null],
     "expectedColors": ["BLACK","WHITE","WHITE","WHITE"],
     "expectedDiscoveryTimes": {
       "0": 4
@@ -21,6 +18,6 @@
     "expectedFinishingTimes": {
       "0": 5
     },
-    "expectedPredecessors": {}
+    "expectedPredecessors": [null, null, null, null]
   }
 ]

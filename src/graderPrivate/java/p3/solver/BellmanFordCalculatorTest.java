@@ -72,7 +72,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     @JsonParameterSetTest(value = "bellmanford/processGraph.json")
     public void testProcessGraph(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         BellmanFordPathCalculator<Integer> calculator = createCalculator(params, true);
 
@@ -118,12 +118,12 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     // TODO bleiben wir dabei das set returned wird?
     private void testCheckNegativeCycles(JsonParameterSet params, boolean exact) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         Map<Integer, Integer> predecessors = createPredecessorMap(params, "predecessors");
         Map<Integer, Integer> distances = createDistanceMap(params, "distances");
 
-        Set<Edge<Integer>> expectedEdges = listToEdgeSet(params.get("expectedEdges"), nodes);
+        Set<Edge<Integer>> expectedEdges = getEdges(params, "expectedEdges");
 
         Graph<Integer> graph = new TestGraph<>(nodes, edges);
         BellmanFordPathCalculator<Integer> calculator = new BellmanFordPathCalculator<>(graph);
@@ -166,12 +166,12 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     @JsonParameterSetTest(value = "bellmanford/calculatePath.json")
     public void testCalculatePath(JsonParameterSet params) {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         int start = params.getInt("start");
         int end = params.getInt("end");
 
-        Set<Edge<Integer>> negativeCycleEdges = listToEdgeSet(params.get("negativeCycleEdges"), nodes);
+        Set<Edge<Integer>> negativeCycleEdges = getEdges(params, "negativeCycleEdges");
         boolean shouldThrowException = params.getBoolean("shouldThrowException");
 
         List<Edge<Integer>> resultList = new ArrayList<>();
@@ -238,7 +238,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
 
     private BellmanFordPathCalculator<Integer> createCalculator(JsonParameterSet params, boolean spy) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = params.availableKeys().contains("edges") ? listToEdgeSet(params.get("edges"), nodes) : Set.of();
+        Set<Edge<Integer>> edges = params.availableKeys().contains("edges") ? getEdges(params) : Set.of();
 
         Graph<Integer> graph = new TestGraph<>(nodes, edges);
         BellmanFordPathCalculator<Integer> calculator = spy ? spy(new BellmanFordPathCalculator<>(graph)) : new BellmanFordPathCalculator<>(graph);

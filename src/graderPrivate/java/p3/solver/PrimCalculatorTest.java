@@ -138,7 +138,7 @@ public class PrimCalculatorTest extends P3_TestBase {
 
     private PrimMSTCalculator<Integer> createCalculator(JsonParameterSet params, boolean spy) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = params.availableKeys().contains("edges") ? listToEdgeSet(params.get("edges"), nodes) : Set.of();
+        Set<Edge<Integer>> edges = getEdges(params);
 
         Graph<Integer> graph = new TestGraph<>(nodes, edges);
         PrimMSTCalculator<Integer> calculator = spy ? spy(new PrimMSTCalculator<>(graph)) : new PrimMSTCalculator<>(graph);

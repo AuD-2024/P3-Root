@@ -181,7 +181,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @JsonParameterSetTest(value = "adjacencygraph/getEdge.json")
     public void testGetEdge(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
         Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
@@ -234,7 +234,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @JsonParameterSetTest(value = "adjacencygraph/getOutgoingEdges.json")
     public void getOutgoingEdgesTest(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
         Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
@@ -284,7 +284,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @JsonParameterSetTest(value = "adjacencygraph/constructor.json")
     public void testConstructor(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
-        Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
+        Set<Edge<Integer>> edges = getEdges(params);
 
         Context.Builder<?> context = contextBuilder()
             .subject("AdjacencyGraph.constructor")

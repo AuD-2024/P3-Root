@@ -1,0 +1,50 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "edges": [
+      [0,1,0,0],
+      [0,0,0,0],
+      [5,6,7,8],
+      [0,0,0,0]
+    ],
+    "current": 0,
+    "time": 0,
+    "colors": ["WHITE","WHITE","WHITE","WHITE"],
+    "predecessors": [null, null, null, null],
+    "expectedColors": ["BLACK","BLACK","WHITE", "WHITE"],
+    "expectedDiscoveryTimes": {
+      "0": 1,
+      "1": 2
+    },
+    "expectedFinishingTimes": {
+      "0": 4,
+      "1": 3
+    },
+    "expectedPredecessors": [null, 0, null, null]
+  },
+  {
+    "nodes": [0,1,2,3],
+    "edges": [
+      [0,1,0,0],
+      [2,3,4,0],
+      [5,6,7,0],
+      [0,0,0,0]
+    ],
+    "current": 0,
+    "time": 0,
+    "colors": ["WHITE","WHITE","WHITE","WHITE"],
+    "predecessors": [null, null, null, null],
+    "expectedColors": ["BLACK","BLACK","BLACK", "WHITE"],
+    "expectedDiscoveryTimes": {
+      "0": 1,
+      "1": 2,
+      "2": 3
+    },
+    "expectedFinishingTimes": {
+      "0": 6,
+      "1": 5,
+      "2": 4
+    },
+    "expectedPredecessors": [null, 0, 1, null]
+  }
+]
