@@ -42,7 +42,8 @@ public class PrimCalculatorTest extends P3_TestBase {
     @Override
     public List<String> getOptionalParams() {
         return List.of("nodes", "edges", "root", "node", "remainingNodes", "predecessors", "keys",
-            "expectedPredecessors", "expectedKeys", "expectedRemainingNodes", "expected", "expectedProcessNodeOrder");
+            "expectedPredecessors", "expectedKeys", "expectedRemainingNodes", "expected", "expectedProcessNodeOrder",
+            "expectedEdges");
     }
 
     @ParameterizedTest
@@ -92,7 +93,7 @@ public class PrimCalculatorTest extends P3_TestBase {
         Context.Builder<?> context = createContext(params, "calculateMST");
 
         List<Integer> nodes = params.get("nodes");
-        List<Integer> remainingNodes = new ArrayList<>(params.get("expectedProcessNodeOrder"));
+        List<Integer> remainingNodes = new ArrayList<>(params.get("remainingNodes"));
         Set<Edge<Integer>> edges = new HashSet<>();
         List<Integer> processNodeOrder = params.get("expectedProcessNodeOrder");
 
@@ -131,6 +132,16 @@ public class PrimCalculatorTest extends P3_TestBase {
         assertSetEquals(edges, actual.getEdges(), context, "returned graph edges");
     }
 
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "prim/calculateMSTEdges.json")
+    public void testCalculateMSTEdges(JsonParameterSet params) throws ReflectiveOperationException {
+        PrimMSTCalculator<Integer> calculator = createCalculator(params);
+        Context.Builder<?> context = createContext(params, "calculateMSTEdges");
+
+        Set<Edge<Integer>> actual = callObject(calculator::calculateMSTEdges, context, "calculateMSTEdges");
+
+        assertSetEquals(getEdges(params, "expectedEdges"), actual, context, "returned");
+    }
 
     private PrimMSTCalculator<Integer> createCalculator(JsonParameterSet params) throws ReflectiveOperationException {
         return createCalculator(params, false);
