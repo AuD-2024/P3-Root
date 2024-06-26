@@ -6,6 +6,7 @@ import p3.graph.AdjacencyMatrix;
 import p3.graph.AdjacencyRepresentation;
 import p3.solver.BellmanFordPathCalculator;
 import p3.solver.PrimMSTCalculator;
+import p3.solver.TopologicalSort;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -76,6 +77,10 @@ public class ReflectionUtil {
 
     public static void setRemainingNodes(PrimMSTCalculator<Integer> calculator, Set<Integer> remainingNodes) throws ReflectiveOperationException {
         setField(calculator, "remainingNodes", remainingNodes);
+    }
+
+    public static void setDFS(TopologicalSort<Integer> topologicalSort, Object dfs) throws ReflectiveOperationException {
+        setField(topologicalSort, "dfs", dfs);
     }
 
     @SuppressWarnings("unchecked")

@@ -3,6 +3,7 @@ package p3.util;
 import org.tudalgo.algoutils.tutor.general.assertions.Assertions2;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,14 @@ public class AssertionUtil {
 
         for (E element : expected) {
             assertTrue(actual.contains(element), context, "The %s set does not contain the element %s".formatted(setName, element));
+        }
+    }
+
+    public static <E> void assertListEquals(List<E> expected, List<E> actual, Context.Builder<?> context, String listName) {
+        assertEquals(expected.size(), actual.size(), context, "The size of the %s list is not correct".formatted(listName));
+
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i), context, "The %s list contains the wrong value at index %d".formatted(listName, i));
         }
     }
 
