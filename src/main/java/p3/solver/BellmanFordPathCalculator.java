@@ -3,7 +3,10 @@ package p3.solver;
 import p3.graph.Edge;
 import p3.graph.Graph;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of the {@link PathCalculator} interface that uses the Bellman-Ford algorithm to calculate the
@@ -50,12 +53,11 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
 
         processGraph();
 
-        Set<Edge<N>> negativeCycles = checkNegativeCycles();
-        if (negativeCycles.isEmpty()) {
-            return reconstructPath(start, end);
-        } else {
+        if (hasNegativeCycle()) {
             throw new CycleException("A negative cycle was detected");
         }
+
+        return reconstructPath(start, end);
     }
 
 
@@ -106,20 +108,18 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
     /**
      * Determines if the graph contains any edges that cause a negative cycle within the graph.
      *
-     * @return a set of edges that cause a negative cycle within the graph.
+     * @return {@code true} if the graph contains a negative cycle, {@code false} otherwise.
      */
-    protected Set<Edge<N>> checkNegativeCycles() {
-        Set<Edge<N>> cyclicEdges = new HashSet<>();
-
+    protected boolean hasNegativeCycle() {
         for (Edge<N> edge : graph.getEdges()) {
             int src = distances.get(edge.from());
             int dest = distances.get(edge.to());
             if (src != Integer.MAX_VALUE && src + edge.weight() < dest) {
-                cyclicEdges.add(edge);
+                return true;
             }
         }
 
-        return cyclicEdges;
+        return false;
     }
 
     /**

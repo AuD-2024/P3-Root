@@ -77,6 +77,12 @@ public class AdjacencyList implements AdjacencyRepresentation {
         adjacencyList = newAdjacencyList;
     }
 
+    /**
+     * Checks whether the given index is in the range of the adjacencyList and throws an {@link IndexOutOfBoundsException}
+     * if it is not.
+     * @param index the index to check.
+     * @throws IndexOutOfBoundsException if the index is out of bounds.
+     */
     private void checkIndex(int index) {
         if (index < 0 || index >= adjacencyList.length) {
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);

@@ -127,7 +127,7 @@ public class DFS<N> implements GraphTraverser<N> {
             if (colors.get(neighbor) == Color.WHITE) {
                 predecessors.put(neighbor, current);
                 visit(consumer, neighbor);
-            }  else if (colors.get(neighbor) == Color.GRAY) {
+            } else if (colors.get(neighbor) == Color.GRAY) {
                 cyclic = true;
             }
         }
