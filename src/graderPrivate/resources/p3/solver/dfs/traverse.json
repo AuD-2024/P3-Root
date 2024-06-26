@@ -1,10 +1,17 @@
 [
   {
     "nodes": [0,1,2,3],
-    "visited": []
+    "colors": ["WHITE","WHITE","WHITE","WHITE"],
+    "expectedVisitedCount": 4
   },
   {
     "nodes": [0,1,2,3,4,5],
-    "visited": [1,2,3,4]
+    "colors": ["WHITE","GRAY","GRAY","GRAY","GRAY","WHITE"],
+    "expectedVisitedCount": 2
+  },
+  {
+    "nodes": [0,1,2,3,4,5],
+    "colors": ["BLACK","GRAY","WHITE", "GRAY", "WHITE", "BLACK"],
+    "expectedVisitedCount": 2
   }
 ]

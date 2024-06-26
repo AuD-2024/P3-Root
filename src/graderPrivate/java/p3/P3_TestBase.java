@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 import static p3.util.AssertionUtil.fail;
@@ -77,33 +79,41 @@ public abstract class P3_TestBase {
         return edgeSet;
     }
 
-    public static Map<Integer, Integer> createPredecessorMap(List<Integer> predecessorList, List<Integer> nodes) {
-        return nodeListToMap(predecessorList, nodes, Map.of(), null);
+    public static <T> Map<Integer, T> nodeListToMap(JsonParameterSet params, String valuesKey, Function<Object, T> valueMapper) {
+        List<Object> list = params.get(valuesKey);
+        return createNodeMap(params, i -> valueMapper.apply(list.get(i)));
     }
 
-    public static Map<Integer, Integer> createDistanceMap(List<Integer> distanceList, List<Integer> nodes) {
-        return nodeListToMap(distanceList, nodes, Map.of(), Integer.MAX_VALUE);
-    }
+    public static <T> Map<Integer, T> createNodeMap(JsonParameterSet params, Function<Integer, T> indexToValue) {
+        List<Integer> nodes = params.get("nodes");
 
-    public static Map<Integer, Integer> createKeysMap(List<Integer> keysList, List<Integer> nodes) {
-        return nodeListToMap(keysList, nodes, Map.of(-1, Integer.MIN_VALUE), Integer.MAX_VALUE);
-    }
-
-    private static Map<Integer, Integer> nodeListToMap(List<Integer> list,
-                                                      List<Integer> nodes,
-                                                      Map<Integer, Integer> replacements,
-                                                      Integer nullReplacement) {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (int i = 0; i < list.size(); i++) {
-            Integer value = list.get(i);
-            if (value == null)
-                map.put(nodes.get(i), nullReplacement);
-            else
-                map.put(nodes.get(i), replacements.getOrDefault(value, value));
+        Map<Integer, T> map = new HashMap<>();
+        for (int i = 0; i < nodes.size(); i++) {
+            map.put(nodes.get(i), indexToValue.apply(i));
         }
 
         return map;
+    }
+
+    public static <T> Map<Integer, T> mapToNodeMap(JsonParameterSet params, String mapKey, Function<Object, T> valueMapper) {
+        return params.<Map<String, Object>>get(mapKey).entrySet().stream()
+            .collect(Collectors.toMap(e -> Integer.parseInt(e.getKey()), e -> valueMapper.apply(e.getValue())));
+    }
+
+    public static Map<Integer, Integer> createPredecessorMap(JsonParameterSet params, String valuesKey) {
+        return nodeListToMap(params, valuesKey, value -> value == null ? null : (Integer) value);
+    }
+
+    public static Map<Integer, Integer> createDistanceMap(JsonParameterSet params, String valuesKey) {
+        return nodeListToMap(params, valuesKey, value -> value == null ? Integer.MAX_VALUE : (Integer) value);
+    }
+
+    public static Map<Integer, Integer> createKeysMap(JsonParameterSet params, String valuesKey) {
+        return nodeListToMap(params, valuesKey, value -> {
+            if (value == null) return Integer.MAX_VALUE;
+            if ((Integer) value == -1) return Integer.MIN_VALUE;
+            return (Integer) value;
+        });
     }
 
 }

@@ -120,8 +120,8 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = listToEdgeSet(params.get("edges"), nodes);
 
-        Map<Integer, Integer> predecessors = createPredecessorMap(params.get("predecessors"), nodes);
-        Map<Integer, Integer> distances = createDistanceMap(params.get("distances"), nodes);
+        Map<Integer, Integer> predecessors = createPredecessorMap(params, "predecessors");
+        Map<Integer, Integer> distances = createDistanceMap(params, "distances");
 
         Set<Edge<Integer>> expectedEdges = listToEdgeSet(params.get("expectedEdges"), nodes);
 
@@ -244,10 +244,10 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
         BellmanFordPathCalculator<Integer> calculator = spy ? spy(new BellmanFordPathCalculator<>(graph)) : new BellmanFordPathCalculator<>(graph);
 
         if (params.availableKeys().contains("predecessors")) {
-            setPredecessors(calculator, createPredecessorMap(params.get("predecessors"), nodes));
+            setPredecessors(calculator, createPredecessorMap(params, "predecessors"));
         }
         if (params.availableKeys().contains("distances")) {
-            setDistances(calculator, createDistanceMap(params.get("distances"), nodes));
+            setDistances(calculator, createDistanceMap(params, "distances"));
         }
 
         return calculator;
@@ -257,8 +257,8 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
         context.add("actual predecessors", calculator.predecessors.toString());
         context.add("actual distances", calculator.distances.toString());
 
-        assertMapEquals(createPredecessorMap(params.get("expectedPredecessors"), params.get("nodes")), calculator.predecessors, context, "predecessor");
-        assertMapEquals(createDistanceMap(params.get("expectedDistances"), params.get("nodes")), calculator.distances, context, "distance");
+        assertMapEquals(createPredecessorMap(params, "expectedPredecessors"), calculator.predecessors, context, "predecessor");
+        assertMapEquals(createDistanceMap(params, "expectedDistances"), calculator.distances, context, "distance");
     }
 
 }

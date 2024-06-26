@@ -145,25 +145,21 @@ public class PrimCalculatorTest extends P3_TestBase {
 
         Set<Integer> remainingNodes = params.availableKeys().contains("remainingNodes") ? new HashSet<>(params.get("remainingNodes")) : new HashSet<>();
 
-        setPredecessors(calculator, createPredecessorMap(params.get("predecessors"), nodes));
-        setKeys(calculator, createKeysMap(params.get("keys"), nodes));
+        setPredecessors(calculator, createPredecessorMap(params, "predecessors"));
+        setKeys(calculator, createKeysMap(params, "keys"));
         setRemainingNodes(calculator, remainingNodes);
 
         return calculator;
     }
 
-    private void assertMapsCorrect(JsonParameterSet params, PrimMSTCalculator<Integer> calculator, Context.Builder<?> context) throws ReflectiveOperationException {
+    private void assertMapsCorrect(JsonParameterSet params, PrimMSTCalculator<Integer> calculator, Context.Builder<?> context) {
         context.add("actual predecessors", calculator.predecessors);
         context.add("actual keys", calculator.keys);
 
-        Map<Integer, Integer> expectedPredecessors = createPredecessorMap(params.get(
-            params.availableKeys().contains("expectedPredecessors") ? "expectedPredecessors" : "predecessors"),
-            params.get("nodes")
-        );
-        Map<Integer, Integer> expectedKeys = createKeysMap(params.get(
-            params.availableKeys().contains("expectedKeys") ? "expectedKeys" : "keys"),
-            params.get("nodes")
-        );
+        Map<Integer, Integer> expectedPredecessors = createPredecessorMap(params,
+            params.availableKeys().contains("expectedPredecessors") ? "expectedPredecessors" : "predecessors");
+        Map<Integer, Integer> expectedKeys = createKeysMap(params,
+            params.availableKeys().contains("expectedKeys") ? "expectedKeys" : "keys");
 
         assertMapEquals(expectedPredecessors, calculator.predecessors, context, "predecessors");
         assertMapEquals(expectedKeys, calculator.keys, context, "keys");
