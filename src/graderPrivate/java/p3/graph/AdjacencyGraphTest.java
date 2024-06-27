@@ -2,6 +2,7 @@ package p3.graph;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.ArgumentCaptor;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
@@ -34,6 +35,7 @@ import static p3.util.ReflectionUtil.setIndexToNode;
 import static p3.util.ReflectionUtil.setNodeToIndex;
 
 // TODO cleanup
+@TestForSubmission
 public class AdjacencyGraphTest extends P3_TestBase {
 
     @Override
@@ -232,7 +234,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/getOutgoingEdges.json")
-    public void getOutgoingEdgesTest(JsonParameterSet params) throws ReflectiveOperationException {
+    public void testGetOutgoingEdges(JsonParameterSet params) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = getEdges(params);
 

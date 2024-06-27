@@ -3,6 +3,7 @@ package p3.solver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
@@ -29,6 +30,7 @@ import static p3.util.AssertionUtil.fail;
 import static p3.util.ReflectionUtil.setDistances;
 import static p3.util.ReflectionUtil.setPredecessors;
 
+@TestForSubmission
 public class BellmanFordCalculatorTest extends P3_TestBase {
 
     @Override
