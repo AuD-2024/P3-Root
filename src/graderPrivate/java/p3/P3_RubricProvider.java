@@ -91,7 +91,7 @@ public class P3_RubricProvider implements RubricProvider {
 
     public static final Criterion H1_3 = createParentCriterion("1 c)", "AdjacencyGraph", H1_3_1, H1_3_2, H1_3_3, H1_3_4, H1_3_5);
 
-    public static final Criterion H1 = createParentCriterion("1", "Graphenrepräsentationen", H1_1, H1_2);
+    public static final Criterion H1 = createParentCriterion("1", "Graphenrepräsentationen", H1_1, H1_2, H1_3);
 
     public static final Criterion H2_1_1 = createCriterion("Die Methode [[[init]]] der Klasse [[[DFS]]] funktioniert vollständig korrekt", 1,
         () -> DFSTest.class.getMethod("testInit", JsonParameterSet.class));
