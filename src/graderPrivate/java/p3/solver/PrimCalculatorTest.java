@@ -3,6 +3,7 @@ package p3.solver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
@@ -33,6 +34,7 @@ import static p3.util.ReflectionUtil.setKeys;
 import static p3.util.ReflectionUtil.setPredecessors;
 import static p3.util.ReflectionUtil.setRemainingNodes;
 
+@TestForSubmission
 public class PrimCalculatorTest extends P3_TestBase {
 
     @Override
@@ -102,7 +104,7 @@ public class PrimCalculatorTest extends P3_TestBase {
         Context.Builder<?> context = createContext(params, "calculateMST");
 
         List<Integer> nodes = params.get("nodes");
-        List<Integer> remainingNodes = new ArrayList<>(params.get("remainingNodes"));
+        List<Integer> remainingNodes = new ArrayList<>(params.get("expectedProcessNodeOrder"));
         Set<Edge<Integer>> edges = new HashSet<>();
         List<Integer> processNodeOrder = params.get("expectedProcessNodeOrder");
 
@@ -132,7 +134,7 @@ public class PrimCalculatorTest extends P3_TestBase {
         checkVerify(() -> inOrder.verify(calculator, times(nodes.size())).processNode(anyInt()), context, "processNode should be called for each node exactly once");
         for (int i = 0; i < nodes.size(); i++) {
             assertEquals(processNodeOrder.get(i), processNodeCaptor.getAllValues().get(i), context,
-                "The %d-th invocation of processNode should be called with the node %d".formatted(i + 1, processNodeOrder.get(i)));
+                "The %dth invocation of processNode should be called with the node %d".formatted(i + 1, processNodeOrder.get(i)));
         }
 
         checkVerify(() -> inOrder.verify(calculator).calculateMSTEdges(), context, "calculateMSTEdges should be called exactly once");
