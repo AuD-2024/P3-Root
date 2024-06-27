@@ -26,6 +26,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static p3.util.AssertionUtil.assertEquals;
 import static p3.util.AssertionUtil.assertMapEquals;
+import static p3.util.AssertionUtil.assertNotNull;
 import static p3.util.AssertionUtil.assertSetEquals;
 import static p3.util.AssertionUtil.fail;
 import static p3.util.ReflectionUtil.setKeys;
@@ -43,7 +44,7 @@ public class PrimCalculatorTest extends P3_TestBase {
     public List<String> getOptionalParams() {
         return List.of("nodes", "edges", "root", "node", "remainingNodes", "predecessors", "keys",
             "expectedPredecessors", "expectedKeys", "expectedRemainingNodes", "expected", "expectedProcessNodeOrder",
-            "expectedEdges");
+            "expectedEdges", "mayReturnAny");
     }
 
     @ParameterizedTest
@@ -81,9 +82,17 @@ public class PrimCalculatorTest extends P3_TestBase {
         context.add("actual", actual);
         context.add("actual remainingNodes", calculator.remainingNodes);
 
-        assertEquals(params.getInt("expected"), actual, context, "extractMin");
+        if (params.getBoolean("mayReturnAny")) {
+            assertNotNull(actual, context, "extractMin should not return null");
+            Set<Integer> expectedSet = new HashSet<>(params.get("remainingNodes"));
+            expectedSet.remove(actual);
+            assertSetEquals(expectedSet, calculator.remainingNodes, context, "remainingNodes");
+        } else {
+            assertEquals(params.getInt("expected"), actual, context, "extractMin did not return the expected node");
+            assertSetEquals(new HashSet<>(params.get("expectedRemainingNodes")), calculator.remainingNodes, context, "remainingNodes");
+        }
+
         assertMapsCorrect(params, calculator, context);
-        assertSetEquals(new HashSet<>(params.get("expectedRemainingNodes")), calculator.remainingNodes, context, "remainingNodes");
     }
 
     @ParameterizedTest

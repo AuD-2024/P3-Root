@@ -108,7 +108,7 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
 
         for (N node : remainingNodes) {
             int key = keys.get(node);
-            if (key < min) {
+            if (key <= min) {
                 minNode = node;
                 min = key;
             }
