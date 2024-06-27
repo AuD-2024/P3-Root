@@ -44,6 +44,12 @@ public abstract class P3_TestBase {
             }
         }
 
+        if (params.availableKeys().contains("edges")) {
+            context.add("gui string", getEdges(params).stream()
+                .map(e -> "%s,%s,%s".formatted(e.from(), e.to(), e.weight()))
+                .collect(Collectors.joining(";")));
+        }
+
         return context;
     }
 
