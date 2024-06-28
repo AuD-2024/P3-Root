@@ -1,0 +1,23 @@
+[
+  {
+    "cyclic": false,
+    "finishingTimes": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4
+    },
+    "expected": [3,2,1,0]
+  },
+  {
+    "cyclic": false,
+    "finishingTimes": {
+      "0": 3,
+      "2": 6,
+      "4": 9,
+      "6": 15,
+      "10":20
+    },
+    "expected": [10,6,4,2,0]
+  }
+]

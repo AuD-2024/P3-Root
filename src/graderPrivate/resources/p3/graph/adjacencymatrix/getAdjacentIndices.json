@@ -1,0 +1,22 @@
+[
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "index": 0,
+    "expected": [1]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "index": 1,
+    "expected": [0,2]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "index": 2,
+    "expected": [1,2]
+  },
+  {
+    "adjacencyMatrix": [[false, true, false, false, false], [false, true, true, false, false], [false, true, true, false, false], [true, false, true, true, false], [false, true, true, false, false]],
+    "index": 3,
+    "expected": [0,2,3]
+  }
+]

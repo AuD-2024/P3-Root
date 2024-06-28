@@ -1,0 +1,18 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "root": 0,
+    "predecessors": [0,null,3,2],
+    "keys": [10, null, 30, 40],
+    "expectedPredecessors": [null, null, null, null],
+    "expectedKeys": [-1, null, null, null]
+  },
+  {
+    "nodes": [0,1,2,3],
+    "root": 2,
+    "predecessors": [0,null,3,2],
+    "keys": [10, null, 30, 40],
+    "expectedPredecessors": [null, null, null, null],
+    "expectedKeys": [null, null, -1, null]
+  }
+]

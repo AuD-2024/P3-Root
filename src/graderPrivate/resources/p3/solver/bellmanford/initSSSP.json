@@ -1,0 +1,18 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "start": 0,
+    "predecessors": [0, null, 1, 2],
+    "distances": [10, null, 30, 40],
+    "expectedPredecessors": [null, null, null, null],
+    "expectedDistances": [0, null, null, null]
+  },
+  {
+    "nodes": [0,1,2,3],
+    "start": 2,
+    "predecessors": [0, null, 1, 2],
+    "distances": [10, null, 30, 40],
+    "expectedPredecessors": [null, null, null, null],
+    "expectedDistances": [null, null, 0, null]
+  }
+]

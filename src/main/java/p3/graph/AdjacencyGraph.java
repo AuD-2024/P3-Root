@@ -152,7 +152,7 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
      * Calculates the weight of the edge that starts at the node {@code from} and ends at the node {@code to}.
      *
      * @param from the node the edge starts at.
-     * @param to  the node the edge ends at.
+     * @param to   the node the edge ends at.
      * @return the weight of the edge that starts at the node {@code from} and ends at the node {@code to}, or {@code null}
      * if there is no such edge.
      */

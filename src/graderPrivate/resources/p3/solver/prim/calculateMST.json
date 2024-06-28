@@ -1,0 +1,10 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "root": 0,
+    "predecessors": [0,1,2,3],
+    "keys": [3,2,4,1],
+    "remainingNodes": [0,1,2,3],
+    "expectedProcessNodeOrder": [3,2,1,0]
+  }
+]

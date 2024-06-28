@@ -1,0 +1,23 @@
+[
+  {
+    "nodes": [0,1,2,3],
+    "edges": [
+      [0,0,0,0],
+      [0,1,2,3],
+      [5,6,7,8],
+      [0,0,0,0]
+    ],
+    "current": 0,
+    "time": 3,
+    "colors": ["WHITE","WHITE","WHITE","WHITE"],
+    "predecessors": [null, null, null, null],
+    "expectedColors": ["BLACK","WHITE","WHITE","WHITE"],
+    "expectedDiscoveryTimes": {
+      "0": 4
+    },
+    "expectedFinishingTimes": {
+      "0": 5
+    },
+    "expectedPredecessors": [null, null, null, null]
+  }
+]

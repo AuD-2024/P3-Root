@@ -1,0 +1,56 @@
+[
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 0,
+    "expected": false
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 1,
+    "expected": true
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 0,
+    "to": 2,
+    "expected": false
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 0,
+    "expected": true
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 1,
+    "expected": false
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 1,
+    "to": 2,
+    "expected": true
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 0,
+    "expected": false
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 1,
+    "expected": true
+  },
+  {
+    "adjacencyMatrix": [[false, true, false], [true, false, true], [false, true, true]],
+    "from": 2,
+    "to": 2,
+    "expected": true
+  }
+]

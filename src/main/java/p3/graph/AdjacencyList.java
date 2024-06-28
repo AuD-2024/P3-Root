@@ -44,7 +44,9 @@ public class AdjacencyList implements AdjacencyRepresentation {
     @Override
     public void addEdge(int from, int to) {
         checkIndex(to);
-        adjacencyList[from].add(to);
+        if (!adjacencyList[from].contains(to)) {
+            adjacencyList[from].add(to);
+        }
     }
 
     @Override
@@ -78,6 +80,7 @@ public class AdjacencyList implements AdjacencyRepresentation {
     /**
      * Checks whether the given index is in the range of the adjacencyList and throws an {@link IndexOutOfBoundsException}
      * if it is not.
+     *
      * @param index the index to check.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
