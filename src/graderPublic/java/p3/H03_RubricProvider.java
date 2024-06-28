@@ -1,4 +1,4 @@
-package h03;
+package p3;
 
 import org.sourcegrade.jagr.api.rubric.Rubric;
 import org.sourcegrade.jagr.api.rubric.RubricProvider;
