@@ -99,7 +99,7 @@ public class P3_RubricProvider implements RubricProvider {
     public static final Criterion H2_1_2 = createCriterion("Die Methode [[[traverse]]] der Klasse [[[DFS]]] funktioniert vollständig korrekt", 1,
             () -> DFSTest.class.getMethod("testTraverse", JsonParameterSet.class));
 
-    public static final Criterion H2_1_3 = createCriterion("Die Methode [[[visit]]] der Klasse [[[DFS]]] funktioniert korrekt wenn der buschte Knoten keine ausgehenden Kanten besitzt", 1,
+    public static final Criterion H2_1_3 = createCriterion("Die Methode [[[visit]]] der Klasse [[[DFS]]] funktioniert korrekt wenn der besuchte Knoten keine ausgehenden Kanten besitzt", 1,
             () -> DFSTest.class.getMethod("testVisitNoOutgoingEdges", JsonParameterSet.class));
 
     public static final Criterion H2_1_4 = createCriterion("Die Methode [[[visit]]] der Klasse [[[DFS]]] funktioniert vollständig korrekt", 1,
@@ -146,10 +146,10 @@ public class P3_RubricProvider implements RubricProvider {
     public static final Criterion H4_3 = createCriterion("Die Methode [[[processNode]]] der Klasse [[[PrimMSTCalculator]]] funktioniert vollständig korrekt", 1,
             () -> PrimCalculatorTest.class.getMethod("testProcessNode", JsonParameterSet.class));
 
-    public static final Criterion H4_5 = createCriterion("Die Methode [[[calculateMST]]] der Klasse [[[PrimMSTCalculator]]] funktioniert vollständig korrekt", 2,
+    public static final Criterion H4_4 = createCriterion("Die Methode [[[calculateMSTEdges]]] der Klasse [[[PrimMSTCalculator]]] funktioniert vollständig korrekt", 2,
             () -> PrimCalculatorTest.class.getMethod("testCalculateMSTEdges", JsonParameterSet.class));
 
-    public static final Criterion H4_4 = createCriterion("Die Methode [[[calculateMST]]] der Klasse [[[PrimMSTCalculator]]] funktioniert vollständig korrekt", 1,
+    public static final Criterion H4_5 = createCriterion("Die Methode [[[calculateMST]]] der Klasse [[[PrimMSTCalculator]]] funktioniert vollständig korrekt", 1,
             () -> PrimCalculatorTest.class.getMethod("testCalculateMST", JsonParameterSet.class));
 
     public static final Criterion H4 = createParentCriterion("4", "Prim", H4_1, H4_2, H4_3, H4_4, H4_5);
