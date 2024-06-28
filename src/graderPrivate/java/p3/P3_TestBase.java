@@ -40,7 +40,13 @@ public abstract class P3_TestBase {
 
         for (String param : getOptionalParams()) {
             if (params.availableKeys().contains(param)) {
-                context.add(param, params.get(param));
+                if (param.contains("keys") && params.availableKeys().contains("nodes")) {
+                    context.add(param, createKeysMap(params, param));
+                } else if (param.contains("distances") && params.availableKeys().contains("nodes")) {
+                    context.add(param, createDistanceMap(params, param));
+                } else {
+                    context.add(param, params.get(param));
+                }
             }
         }
 
