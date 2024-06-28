@@ -7,6 +7,7 @@ import org.sourcegrade.jagr.api.rubric.Rubric;
 import org.sourcegrade.jagr.api.rubric.RubricProvider;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import p3.graph.AdjacencyGraphTest;
+import p3.graph.AdjacencyListTest;
 import p3.graph.AdjacencyMatrixTest;
 import p3.solver.BellmanFordCalculatorTest;
 import p3.solver.DFSTest;
@@ -66,11 +67,11 @@ public class P3_RubricProvider implements RubricProvider {
     public static final Criterion H1_1 = createParentCriterion("1 a)", "AdjacencyMatrix", H1_1_1, H1_1_2);
 
     public static final Criterion H1_2_1 = createCriterion("Die Methoden [[[hasEdge]]] und [[[addEdge]]] der Klasse [[[AdjacencyList]]] funktionieren vollständig korrekt", 1,
-            () -> AdjacencyMatrixTest.class.getMethod("testHasEdge", JsonParameterSet.class),
-            () -> AdjacencyMatrixTest.class.getMethod("testAddEdge", JsonParameterSet.class));
+            () -> AdjacencyListTest.class.getMethod("testHasEdge", JsonParameterSet.class),
+            () -> AdjacencyListTest.class.getMethod("testAddEdge", JsonParameterSet.class));
 
     public static final Criterion H1_2_2 = createCriterion("Die Methode [[[getAdjacentIndices]]] der Klasse [[[AdjacencyList]]] funktioniert vollständig korrekt", 1,
-            () -> AdjacencyMatrixTest.class.getMethod("testGetAdjacentIndices", JsonParameterSet.class));
+            () -> AdjacencyListTest.class.getMethod("testGetAdjacentIndices", JsonParameterSet.class));
 
     public static final Criterion H1_2 = createParentCriterion("1 b)", "AdjacencyList", H1_2_1, H1_2_2);
 
