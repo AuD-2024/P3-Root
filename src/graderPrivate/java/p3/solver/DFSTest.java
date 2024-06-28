@@ -58,7 +58,8 @@ public class DFSTest extends P3_TestBase {
         doNothing().when(dfs).visit(visitedConsumerCaptor.capture(), visitedNodeCaptor.capture());
 
         Context.Builder<?> context = createContext(params, "traverse");
-        ObjIntConsumer<Integer> emptyConsumer = (node, time) -> {};
+        ObjIntConsumer<Integer> emptyConsumer = (node, time) -> {
+        };
 
         call(() -> dfs.traverse(emptyConsumer), context, "traverse");
 
@@ -148,14 +149,15 @@ public class DFSTest extends P3_TestBase {
         DFS<Integer> dfs = createDFS(params);
         Context.Builder<?> context = createContext(params, "isCyclic");
 
-        ObjIntConsumer<Integer> emptyConsumer = (node, time) -> {};
+        ObjIntConsumer<Integer> emptyConsumer = (node, time) -> {
+        };
 
         call(() -> dfs.traverse(emptyConsumer), context, "isCyclic");
 
         context.add("actual cyclic", dfs.isCyclic());
 
         assertEquals(params.get("hasCycle"), dfs.isCyclic(), context,
-                "The method isCyclic() did not return the correct value after calling traverse()");
+            "The method isCyclic() did not return the correct value after calling traverse()");
     }
 
     private DFS<Integer> createDFS(JsonParameterSet params) {

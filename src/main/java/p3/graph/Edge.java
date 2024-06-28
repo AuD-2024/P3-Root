@@ -66,8 +66,8 @@ public interface Edge<N> extends Comparable<Edge<N>> {
     /**
      * Creates a new edge with the given nodes and weight.
      *
-     * @param from      the first node
-     * @param to      the second node
+     * @param from   the first node
+     * @param to     the second node
      * @param weight the weight of the edge
      * @param <N>    the type of the nodes in the graph
      * @return a new edge with the given nodes and weight

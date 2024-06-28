@@ -1,6 +1,5 @@
 package p3.graph;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,22 +44,22 @@ public class BasicGraph<N> implements Graph<N> {
     @Override
     public Set<Edge<N>> getOutgoingEdges(N node) {
         return edges.stream()
-            .filter(edge -> edge.from().equals(node))
-            .collect(Collectors.toSet());
+                .filter(edge -> edge.from().equals(node))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<Edge<N>> getIngoingEdges(N node) {
         return edges.stream()
-            .filter(edge -> edge.to().equals(node))
-            .collect(Collectors.toSet());
+                .filter(edge -> edge.to().equals(node))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Edge<N> getEdge(N from, N to) {
         return edges.stream()
-            .filter(edge -> edge.from().equals(from) && edge.to().equals(to))
-            .findFirst()
-            .orElse(null);
+                .filter(edge -> edge.from().equals(from) && edge.to().equals(to))
+                .findFirst()
+                .orElse(null);
     }
 }

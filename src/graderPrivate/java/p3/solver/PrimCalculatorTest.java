@@ -45,8 +45,8 @@ public class PrimCalculatorTest extends P3_TestBase {
     @Override
     public List<String> getOptionalParams() {
         return List.of("nodes", "edges", "root", "node", "remainingNodes", "predecessors", "keys",
-            "expectedPredecessors", "expectedKeys", "expectedRemainingNodes", "expected", "expectedProcessNodeOrder",
-            "expectedEdges", "mayReturnAny");
+                "expectedPredecessors", "expectedKeys", "expectedRemainingNodes", "expected", "expectedProcessNodeOrder",
+                "expectedEdges", "mayReturnAny");
     }
 
     @ParameterizedTest
@@ -134,7 +134,7 @@ public class PrimCalculatorTest extends P3_TestBase {
         checkVerify(() -> inOrder.verify(calculator, times(nodes.size())).processNode(anyInt()), context, "processNode should be called for each node exactly once");
         for (int i = 0; i < nodes.size(); i++) {
             assertEquals(processNodeOrder.get(i), processNodeCaptor.getAllValues().get(i), context,
-                "The %dth invocation of processNode should be called with the node %d".formatted(i + 1, processNodeOrder.get(i)));
+                    "The %dth invocation of processNode should be called with the node %d".formatted(i + 1, processNodeOrder.get(i)));
         }
 
         checkVerify(() -> inOrder.verify(calculator).calculateMSTEdges(), context, "calculateMSTEdges should be called exactly once");
@@ -179,9 +179,9 @@ public class PrimCalculatorTest extends P3_TestBase {
         context.add("actual keys", calculator.keys);
 
         Map<Integer, Integer> expectedPredecessors = createPredecessorMap(params,
-            params.availableKeys().contains("expectedPredecessors") ? "expectedPredecessors" : "predecessors");
+                params.availableKeys().contains("expectedPredecessors") ? "expectedPredecessors" : "predecessors");
         Map<Integer, Integer> expectedKeys = createKeysMap(params,
-            params.availableKeys().contains("expectedKeys") ? "expectedKeys" : "keys");
+                params.availableKeys().contains("expectedKeys") ? "expectedKeys" : "keys");
 
         assertMapEquals(expectedPredecessors, calculator.predecessors, context, "predecessors");
         assertMapEquals(expectedKeys, calculator.keys, context, "keys");

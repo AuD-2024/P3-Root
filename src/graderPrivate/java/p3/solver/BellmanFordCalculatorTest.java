@@ -94,7 +94,7 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
                 for (Edge<Integer> edge : edges) {
                     int iteration = i / edges.size();
                     assertTrue(currentIterationEdges.contains(edge), context, "The edges in iteration %d (relax invocation %d to %d) do not contain edge %s"
-                        .formatted(iteration, iteration * edges.size(), (iteration + 1) * edges.size(), edge));
+                            .formatted(iteration, iteration * edges.size(), (iteration + 1) * edges.size(), edge));
                 }
             }
         }

@@ -32,7 +32,7 @@ public abstract class P3_TestBase {
 
     public Context.Builder<?> createContext(JsonParameterSet params, String method, Map<String, Object> additionalParams) {
         Context.Builder<?> context = contextBuilder()
-            .subject("%s.%s".formatted(getTestedClassName(), method));
+                .subject("%s.%s".formatted(getTestedClassName(), method));
 
         for (Map.Entry<String, Object> entry : additionalParams.entrySet()) {
             context.add(entry.getKey(), entry.getValue());
@@ -115,7 +115,7 @@ public abstract class P3_TestBase {
 
     public static <T> Map<Integer, T> mapToNodeMap(JsonParameterSet params, String mapKey, Function<Object, T> valueMapper) {
         return params.<Map<String, Object>>get(mapKey).entrySet().stream()
-            .collect(Collectors.toMap(e -> Integer.parseInt(e.getKey()), e -> valueMapper.apply(e.getValue())));
+                .collect(Collectors.toMap(e -> Integer.parseInt(e.getKey()), e -> valueMapper.apply(e.getValue())));
     }
 
     public static Map<Integer, Integer> createPredecessorMap(JsonParameterSet params, String valuesKey) {

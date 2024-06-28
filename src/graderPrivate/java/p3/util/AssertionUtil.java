@@ -6,7 +6,6 @@ import p3.graph.Edge;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class AssertionUtil {
@@ -22,7 +21,7 @@ public class AssertionUtil {
 
             if (entry.getValue() instanceof Edge expectedEdge) {
                 assertEquals(expectedEdge.weight(), ((Edge<Integer>) entry.getValue()).weight(), context,
-                    "The %s map contains the edge %s but it has the wrong weight".formatted(mapName, expectedEdge));
+                        "The %s map contains the edge %s but it has the wrong weight".formatted(mapName, expectedEdge));
             }
         }
     }
@@ -37,7 +36,7 @@ public class AssertionUtil {
 
             if (element instanceof Edge expectedEdge) {
                 assertEquals(expectedEdge.weight(), actual.stream().map(Edge.class::cast).filter(e -> e.equals(expectedEdge)).findFirst().get().weight(),
-                    context, "The %s set contains the edge %s but it has the wrong weight".formatted(setName, expectedEdge));
+                        context, "The %s set contains the edge %s but it has the wrong weight".formatted(setName, expectedEdge));
             }
         }
     }
@@ -52,7 +51,7 @@ public class AssertionUtil {
 
             if (expected.get(i) instanceof Edge expectedEdge) {
                 assertEquals(expectedEdge.weight(), ((Edge) actual.get(i)).weight(), context,
-                    "The %s list contains the edge %s but it has the wrong weight".formatted(listName, expectedEdge));
+                        "The %s list contains the edge %s but it has the wrong weight".formatted(listName, expectedEdge));
             }
         }
     }
