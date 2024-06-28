@@ -50,6 +50,14 @@ public abstract class P3_TestBase {
             }
         }
 
+        if (params.availableKeys().contains("edges")) {
+            context.add("gui string",
+                params.<List<Integer>>get("nodes").stream().map(Object::toString).collect(Collectors.joining(",")) + "/" +
+                getEdges(params).stream()
+                .map(e -> "%s,%s,%s".formatted(e.from(), e.to(), e.weight()))
+                .collect(Collectors.joining(";")));
+        }
+
         return context;
     }
 
