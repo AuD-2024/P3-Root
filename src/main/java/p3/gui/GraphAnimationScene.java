@@ -2,7 +2,6 @@ package p3.gui;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -129,6 +128,7 @@ public class GraphAnimationScene<N> extends Scene {
     public void setGraph(Graph<N> graph) {
         this.graph = graph;
         graphPane.setGraph(graph);
+        root.setCenter(graphPane);
     }
 
     public Animation<N> getCurrentAnimation() {

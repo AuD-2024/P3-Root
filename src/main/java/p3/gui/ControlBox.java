@@ -27,12 +27,10 @@ public class ControlBox<N> extends HBox {
         setPadding(new Insets(5));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
-        Button backButton = new Button("Back");
         nextStepButton = new Button("Next Step");
         Button zoomOutButton = new Button("Zoom Out");
         Button zoomInButton = new Button("Zoom In");
-        Button centerButton = new Button("Center Tree");
-        Button printTreeButton = new Button("Print Tree");
+        Button centerButton = new Button("Center Graph");
         CheckBox animationCheckBox = new CheckBox("Animate");
 
         animationCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -45,14 +43,8 @@ public class ControlBox<N> extends HBox {
 
         animationCheckBox.setSelected(true);
 
-        getChildren().addAll(backButton, nextStepButton, centerButton, zoomInButton, zoomOutButton, printTreeButton, animationCheckBox);
+        getChildren().addAll(nextStepButton, centerButton, zoomInButton, zoomOutButton, animationCheckBox);
         setAlignment(Pos.CENTER_LEFT);
-
-        backButton.setOnAction(event -> {
-            animationScene.finishCurrentAnimation();
-            MyApplication.currentScene = null;
-            primaryStage.setScene(new LoadTreeScene(primaryStage));
-        });
 
         nextStepButton.setDisable(true);
         nextStepButton.setOnAction(event -> {
@@ -64,9 +56,6 @@ public class ControlBox<N> extends HBox {
         centerButton.setOnAction(event -> animationScene.getGraphPane().center());
         zoomInButton.setOnAction(event -> animationScene.getGraphPane().zoomIn());
         zoomOutButton.setOnAction(event -> animationScene.getGraphPane().zoomOut());
-
-        //TODO was mit dem machen?
-        printTreeButton.setOnAction(event -> System.out.println("Current Tree: " + animationScene.getCurrentAnimation().toString()));
     }
 
     public void enableNextStepButton() {

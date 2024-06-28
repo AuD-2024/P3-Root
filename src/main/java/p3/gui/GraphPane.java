@@ -1,11 +1,13 @@
 package p3.gui;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -40,7 +42,7 @@ import static p3.gui.GraphStyle.TEXT_COLOR;
 /**
  * A {@link Pane} that displays an {@link p3.graph.Graph}.
  * <p>
- * It allows to zoom in and out, drag the displayed tree, center it, and highlights nodes and edges.
+ * It allows to zoom in and out, drag the displayed graph, center it, and highlights nodes and edges.
  */
 public class GraphPane<N> extends Pane {
 
@@ -57,7 +59,7 @@ public class GraphPane<N> extends Pane {
     private final Map<N, LabeledNode> nodes = new HashMap<>();
     private final Map<N, Location> nodeLocations = new HashMap<>();
 
-    private final Map<Edge<N>, Arrow> edges = new HashMap<>();
+    private final Map<Edge<N>, EdgeShape> edges = new HashMap<>();
     private final Map<N, Map<N, Edge<N>>> nodesToEdge = new HashMap<>();
 
     private final List<Line> grid = new ArrayList<>();
@@ -72,7 +74,7 @@ public class GraphPane<N> extends Pane {
     }
 
     /**
-     * Creates a new {@link GraphPane} that initially displays the tree with the given graph node.
+     * Creates a new {@link GraphPane} that initially displays the graph with the given graph node.
      *
      * @param graph the graph to display.
      */
@@ -89,9 +91,9 @@ public class GraphPane<N> extends Pane {
     }
 
     /**
-     * Sets the tree to display to the given one.
+     * Sets the graph to display to the given one.
      *
-     * @param graph The graph node of the tree to display.
+     * @param graph The graph node of the graph to display.
      */
     public void setGraph(Graph<N> graph) {
         clear();
@@ -128,8 +130,9 @@ public class GraphPane<N> extends Pane {
 
     /**
      * Highlights the edge between the given nodes by changing its color and stroke settings.
+     *
      * @param from The source node of the edge.
-     * @param to The target node of the edge.
+     * @param to   The target node of the edge.
      * @throws IllegalArgumentException If no edge between the given nodes exists.
      */
     public void highlightEdge(N from, N to) {
@@ -143,7 +146,7 @@ public class GraphPane<N> extends Pane {
      * @throws IllegalArgumentException If the given {@linkplain Edge edge} is not part of this {@link GraphPane}.
      */
     public void setEdgeColor(Edge<N> edge, Color color) {
-        getEdgeArrow(edge).setStroke(color);
+        getEdgeShape(edge).setStroke(color);
     }
 
     /**
@@ -155,7 +158,7 @@ public class GraphPane<N> extends Pane {
      * @throws IllegalArgumentException If the given {@linkplain Edge edge} is not part of this {@link GraphPane}.
      */
     public void setEdgeDash(Edge<N> edge, double dashLength, double gapLength) {
-        getEdgeArrow(edge).setStrokeDashArray(dashLength, gapLength);
+        getEdgeShape(edge).setStrokeDashArray(dashLength, gapLength);
     }
 
     /**
@@ -165,9 +168,9 @@ public class GraphPane<N> extends Pane {
      * @throws IllegalArgumentException If the given {@linkplain Edge edge} is not part of this {@link GraphPane}.
      */
     public void resetEdge(Edge<N> edge) {
-        Arrow arrow = getEdgeArrow(edge);
-        arrow.clearStrokeDashArray();
-        arrow.setStroke(DEFAULT_EDGE_COLOR);
+        EdgeShape edgeShape = getEdgeShape(edge);
+        edgeShape.clearStrokeDashArray();
+        edgeShape.setStroke(DEFAULT_EDGE_COLOR);
     }
 
     /**
@@ -193,13 +196,9 @@ public class GraphPane<N> extends Pane {
         Point2D transformedPointA = transform(getLocation(edge.from()));
         Point2D transformedPointB = transform(getLocation(edge.to()));
 
-        Arrow arrow = edges.get(edge);
+        EdgeShape edgeShape = edges.get(edge);
 
-        arrow.setStartX(transformedPointA.getX());
-        arrow.setStartY(transformedPointA.getY());
-
-        arrow.setEndX(transformedPointB.getX());
-        arrow.setEndY(transformedPointB.getY());
+        edgeShape.setPosition(transformedPointA, transformedPointB);
     }
 
     // --- Node Handling --- //
@@ -290,7 +289,7 @@ public class GraphPane<N> extends Pane {
      */
     public void redrawNode(N node) {
         if (!nodes.containsKey(node)) {
-            throw new IllegalArgumentException("The given node is not part of this TreePane");
+            throw new IllegalArgumentException("The given node is not part of this GraphPane");
         }
 
         Point2D transformedMidPoint = transform(midPoint(node));
@@ -383,14 +382,14 @@ public class GraphPane<N> extends Pane {
     }
 
     /**
-     * Increases the zoom of the current treePane, i.e. the size of the covered area is decreased.
+     * Increases the zoom of the current graphPane, i.e. the size of the covered area is decreased.
      */
     public void zoomIn() {
         zoom(getWidth() / 2.0, getHeight() / 2.0, SCALE_IN);
     }
 
     /**
-     * Decreases the zoom of the current treePane, i.e. the size of the covered area is increased.
+     * Decreases the zoom of the current graphPane, i.e. the size of the covered area is increased.
      */
     public void zoomOut() {
         zoom(getWidth() / 2.0, getHeight() / 2.0, SCALE_OUT);
@@ -476,21 +475,27 @@ public class GraphPane<N> extends Pane {
         nodesToEdge.computeIfAbsent(edge.from(), k -> new HashMap<>()).put(edge.to(), edge);
     }
 
-    private Arrow drawEdge(Edge<N> edge) {
+    private EdgeShape drawEdge(Edge<N> edge) {
         Location from = getLocation(edge.from());
         Location to = getLocation(edge.to());
 
         Point2D transformedA = transform(from);
         Point2D transformedB = transform(to);
 
-        Arrow arrow = new Arrow(transformedA.getX(), transformedA.getY(), transformedB.getX(), transformedB.getY());
+        EdgeShape edgeShape;
 
-        arrow.setStroke(DEFAULT_EDGE_COLOR);
-        arrow.setStrokeWidth(EDGE_STROKE_WIDTH);
+        if (edge.from() == edge.to()) {
+            edgeShape = new selfLoop(transformedA, Integer.toString(edge.weight()));
+        } else {
+            edgeShape = new LabeledArrow(transformedA, transformedB, Integer.toString(edge.weight()));
+        }
 
-        getChildren().add(arrow);
+        edgeShape.setStroke(DEFAULT_EDGE_COLOR);
+        edgeShape.setStrokeWidth(EDGE_STROKE_WIDTH);
 
-        return arrow;
+        getChildren().add(edgeShape.getNode());
+
+        return edgeShape;
     }
 
     private void addNode(N node) {
@@ -571,12 +576,12 @@ public class GraphPane<N> extends Pane {
         return nodesToEdge.get(source).get(target);
     }
 
-    private Arrow getEdgeArrow(Edge<N> edge) {
-        Arrow arrow = edges.get(edge);
-        if (arrow == null) {
+    private EdgeShape getEdgeShape(Edge<N> edge) {
+        EdgeShape edgeShape = edges.get(edge);
+        if (edgeShape == null) {
             throw new IllegalArgumentException("The given edge is not part of this GraphPane");
         }
-        return arrow;
+        return edgeShape;
     }
 
     private LabeledNode getLabeledNode(N node) {
@@ -695,6 +700,10 @@ public class GraphPane<N> extends Pane {
             nodeLocations.put(node, new Location(random.nextDouble() * width, random.nextDouble() * height));
         }
 
+        if (graph.getNodes().size() == 1) {
+            return;
+        }
+
         for (int i = 0; i < iterations; i++) {
             Map<N, Location> forces = new HashMap<>();
 
@@ -770,34 +779,114 @@ public class GraphPane<N> extends Pane {
 
     }
 
-    //TODO add weight labels to edges
+    private interface EdgeShape {
+
+        void setStrokeWidth(double width);
+
+        void setStroke(Paint color);
+
+        void setStrokeDashArray(Double... dashes);
+
+        void clearStrokeDashArray();
+
+        void setPosition(Point2D start, Point2D end);
+
+        Node getNode();
+    }
+
+    private static class selfLoop extends Group implements EdgeShape {
+
+        private final CubicCurve curve;
+        private final Text text;
+
+        public selfLoop(Point2D nodeLocation, String text) {
+            this(new CubicCurve(), new Text());
+
+            this.text.setText(text);
+            setPosition(nodeLocation, nodeLocation);
+        }
+
+        private selfLoop(CubicCurve curve, Text text) {
+            super(curve, text);
+            this.curve = curve;
+            this.text = text;
+
+            curve.setFill(null);
+        }
+
+        @Override
+        public void setStrokeWidth(double width) {
+            curve.setStrokeWidth(width);
+        }
+
+        @Override
+        public void setStroke(Paint color) {
+            curve.setStroke(color);
+        }
+
+        @Override
+        public void setStrokeDashArray(Double... dashes) {
+            curve.getStrokeDashArray().setAll(dashes);
+        }
+
+        @Override
+        public void clearStrokeDashArray() {
+            curve.getStrokeDashArray().clear();
+        }
+
+        @Override
+        public void setPosition(Point2D start, Point2D end) {
+
+            final double offset = NODE_DIAMETER * 3;
+
+            curve.setStartX(start.getX());
+            curve.setStartY(start.getY());
+            curve.setControlX1(start.getX() + offset);
+            curve.setControlY1(start.getY() - offset);
+            curve.setControlX2(start.getX() - offset);
+            curve.setControlY2(start.getY() - offset);
+            curve.setEndX(start.getX());
+            curve.setEndY(start.getY());
+
+            text.setX(start.getX() - text.getLayoutBounds().getWidth() / 2.0);
+            text.setY(start.getY() - offset * 0.9);
+        }
+
+        @Override
+        public Node getNode() {
+            return this;
+        }
+    }
+
     // https://stackoverflow.com/questions/41353685/how-to-draw-arrow-javafx-pane
-    private static class Arrow extends Group {
+    private static class LabeledArrow extends Group implements EdgeShape {
 
         private final Line line;
         private final Line arrow1;
         private final Line arrow2;
+        private final Text text;
 
-        public Arrow() {
-            this(new Line(), new Line(), new Line());
-        }
-
-        public Arrow(double startX, double startY, double endX, double endY) {
-            this();
-            setStartX(startX);
-            setStartY(startY);
-            setEndX(endX);
-            setEndY(endY);
+        public LabeledArrow(Point2D start, Point2D end, String text) {
+            this(new Line(), new Line(), new Line(), new Text());
+            setStartX(start.getX());
+            setStartY(start.getY());
+            setEndX(end.getX());
+            setEndY(end.getY());
+            setText(text);
         }
 
         private static final double arrowLength = 20;
         private static final double arrowWidth = 7;
 
-        private Arrow(Line line, Line arrow1, Line arrow2) {
-            super(line, arrow1, arrow2);
+        private LabeledArrow(Line line, Line arrow1, Line arrow2, Text text) {
+            super(line, arrow1, arrow2, text);
             this.line = line;
             this.arrow1 = arrow1;
             this.arrow2 = arrow2;
+            this.text = text;
+
+            text.setStroke(TEXT_COLOR);
+
             InvalidationListener updater = o -> {
 
                 Location lineVector = new Location(getEndX(), getEndY()).sub(new Location(getStartX(), getStartY()));
@@ -807,6 +896,11 @@ public class GraphPane<N> extends Pane {
                 double ey = getEndY() - nodeOffset.y();
                 double sx = getStartX();
                 double sy = getStartY();
+
+                Location lineNormal = new Location(-lineVector.y(), lineVector.x()).normalize();
+
+                text.setX((sx + 3 * ex) / 4 + lineNormal.x() * 10);
+                text.setY((sy + 3 * ey) / 4 + lineNormal.y() * 10);
 
                 arrow1.setEndX(ex);
                 arrow1.setEndY(ey);
@@ -828,7 +922,7 @@ public class GraphPane<N> extends Pane {
                     double dx = (sx - ex) * factor;
                     double dy = (sy - ey) * factor;
 
-                    // part ortogonal to main line
+                    // part orthogonal to main line
                     double ox = (sx - ex) * factorO;
                     double oy = (sy - ey) * factorO;
 
@@ -840,10 +934,10 @@ public class GraphPane<N> extends Pane {
             };
 
             // add updater to properties
-            startXProperty().addListener(updater);
-            startYProperty().addListener(updater);
-            endXProperty().addListener(updater);
-            endYProperty().addListener(updater);
+            line.startXProperty().addListener(updater);
+            line.startYProperty().addListener(updater);
+            line.endXProperty().addListener(updater);
+            line.endYProperty().addListener(updater);
             updater.invalidated(null);
 
             arrow1.strokeProperty().bind(line.strokeProperty());
@@ -863,20 +957,12 @@ public class GraphPane<N> extends Pane {
             return line.getStartX();
         }
 
-        public final DoubleProperty startXProperty() {
-            return line.startXProperty();
-        }
-
         public final void setStartY(double value) {
             line.setStartY(value);
         }
 
         public final double getStartY() {
             return line.getStartY();
-        }
-
-        public final DoubleProperty startYProperty() {
-            return line.startYProperty();
         }
 
         public final void setEndX(double value) {
@@ -887,10 +973,6 @@ public class GraphPane<N> extends Pane {
             return line.getEndX();
         }
 
-        public final DoubleProperty endXProperty() {
-            return line.endXProperty();
-        }
-
         public final void setEndY(double value) {
             line.setEndY(value);
         }
@@ -899,11 +981,11 @@ public class GraphPane<N> extends Pane {
             return line.getEndY();
         }
 
-        public final DoubleProperty endYProperty() {
-            return line.endYProperty();
+        public void setText(String text) {
+            this.text.setText(text);
         }
 
-        public void setStroke(Color color) {
+        public void setStroke(Paint color) {
             line.setStroke(color);
         }
 
@@ -923,6 +1005,18 @@ public class GraphPane<N> extends Pane {
             arrow2.getStrokeDashArray().clear();
         }
 
+        @Override
+        public void setPosition(Point2D start, Point2D end) {
+            setStartX(start.getX());
+            setStartY(start.getY());
+            setEndX(end.getX());
+            setEndY(end.getY());
+        }
+
+        @Override
+        public Node getNode() {
+            return this;
+        }
     }
 
     /**

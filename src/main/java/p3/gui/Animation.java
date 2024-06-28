@@ -1,7 +1,7 @@
 package p3.gui;
 
 /**
- * An interface for animations of binary trees that can be visualized and stopped.
+ * An interface for animations of graphs that can be visualized and stopped.
  * The implementations of this interface are responsible for calling {@link Object#wait()} to wait for the next step
  * of the animation being triggered and update the visualization before waiting.
  * To avoid blocking the JavaFX thread, the animation should be performed in a new thread.

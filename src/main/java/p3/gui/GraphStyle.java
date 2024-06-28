@@ -3,7 +3,7 @@ package p3.gui;
 import javafx.scene.paint.Color;
 
 /**
- * Settings class for changing the appearance of the displayed tree.
+ * Settings class for changing the appearance of the displayed graph.
  */
 public class GraphStyle {
 

@@ -31,6 +31,8 @@ public class DFSAnimation<N> extends Animation<N> {
                 waitUntilNextStep();
             }
         });
+
+        updateVisualization(Thread.currentThread().getStackTrace());
     }
 
     private void updateVisualization(StackTraceElement[] stackTrace) {

@@ -2,13 +2,6 @@ package p3.gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import p3.graph.MutableGraph;
-import p3.solver.MSTCalculator;
-import p3.solver.PrimMSTCalculator;
-
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 /**
  * Main entry point in executing the GUI.

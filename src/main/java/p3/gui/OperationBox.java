@@ -2,8 +2,6 @@ package p3.gui;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -40,8 +38,8 @@ public class OperationBox<N> extends VBox {
     /**
      * Constructs a new operation box.
      *
-     * @param animationScene The scene containing the tree to operate on.
-     * @param inputParser    A function for parsing the input strings to the type of the elements in the tree.
+     * @param animationScene The scene containing the graph to operate on.
+     * @param inputParser    A function for parsing the input strings to the type of the elements in the graph.
      */
     public OperationBox(GraphAnimationScene<N> animationScene, Function<String, N> inputParser) {
         super(5);
