@@ -17,15 +17,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 import static p3.util.AssertionUtil.assertEquals;
 import static p3.util.AssertionUtil.assertMapEquals;
-import static p3.util.AssertionUtil.assertNotNull;
 import static p3.util.AssertionUtil.assertSame;
+import static p3.util.AssertionUtil.assertSetEquals;
 import static p3.util.AssertionUtil.assertTrue;
 import static p3.util.ReflectionUtil.getIndexToNode;
 import static p3.util.ReflectionUtil.getNodeToIndex;
@@ -44,47 +42,36 @@ public class AdjacencyGraphTest extends P3_TestBase {
 
     @Override
     public List<String> getOptionalParams() {
-        return List.of();
+        return List.of("nodes", "edges", "nodeToAdd");
     }
 
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/addNode.json")
     public void testAddNode(JsonParameterSet params) throws ReflectiveOperationException {
+        Context.Builder<?> context = createContext(params, "addNode");
+        AdjacencyGraph<Integer> graph = createGraph(params, context, true);
+
+        TestAdjacencyRepresentation representation = (TestAdjacencyRepresentation) getRepresentation(graph);
+        representation.disableAddEdge();
+
         List<Integer> nodes = params.get("nodes");
         int nodeToAdd = params.get("nodeToAdd");
 
         boolean alreadyContains = nodes.contains(nodeToAdd);
 
-        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
-        Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
-
-        Map<Integer, Integer> expectedNodeToIndex = new HashMap<>(nodeToIndex);
+        Map<Integer, Integer> expectedNodeToIndex = createNodeToIndexMap(params);
         if (!alreadyContains) expectedNodeToIndex.put(nodeToAdd, nodes.size());
 
-        Map<Integer, Integer> expectedIndexToNode = new HashMap<>(indexToNode);
+        Map<Integer, Integer> expectedIndexToNode = createIndexToNodeMap(params);
         if (!alreadyContains) expectedIndexToNode.put(nodes.size(), nodeToAdd);
 
-        Context.Builder<?> context = contextBuilder()
-                .subject("AdjacencyGraph.addNode")
-                .add("nodes", nodes)
-                .add("nodeToAdd", nodeToAdd)
-                .add("previous nodeToIndex", nodeToIndex.toString())
-                .add("previous indexToNode", indexToNode.toString())
-                .add("expected nodeToIndex", expectedNodeToIndex.toString())
-                .add("expected indexToNode", expectedIndexToNode.toString());
-
-        TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
-        representation.disableAddEdge();
-
-        AdjacencyGraph<Integer> graph = new AdjacencyGraph<>(new HashSet<>(nodes), Set.of(), size -> representation);
-
-        setNodeToIndex(graph, nodeToIndex);
-        setIndexToNode(graph, indexToNode);
+        context.add("expected nodeToIndex", expectedNodeToIndex);
+        context.add("expected indexToNode", expectedIndexToNode);
 
         call(() -> graph.addNode(nodeToAdd), context, "addNode");
 
-        context.add("actual nodeToIndex", getNodeToIndex(graph).toString())
-                .add("actual indexToNode", getIndexToNode(graph).toString());
+        context.add("actual nodeToIndex", getNodeToIndex(graph).toString());
+        context.add("actual indexToNode", getIndexToNode(graph).toString());
 
         assertMapEquals(expectedNodeToIndex, getNodeToIndex(graph), context, "nodeToIndex");
         assertMapEquals(expectedIndexToNode, getIndexToNode(graph), context, "indexToNode");
@@ -99,24 +86,18 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/addEdge.json")
     public void testAddEdge(JsonParameterSet params) throws ReflectiveOperationException {
-        List<Integer> nodes = params.get("nodes");
+        Context.Builder<?> context = createContext(params, "addEdge");
+        AdjacencyGraph<Integer> graph = createGraph(params, context, true);
+
+        ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
+
         List<Integer> fromList = params.get("from");
         List<Integer> toList = params.get("to");
         List<Integer> weightList = params.get("weight");
         int edgesToAddCount = params.getInt("edgesToAddCount");
 
-
-        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
-        Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
-
-        TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
-        representation.disableGrow();
-
-        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), Set.of(), size -> representation),
-                contextBuilder().add("nodes", nodes).add("edges", Set.of()), "The constructor should not throw an exception");
-
-        setNodeToIndex(graph, new HashMap<>(nodeToIndex));
-        setIndexToNode(graph, new HashMap<>(indexToNode));
+        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(params);
+        Map<Integer, Integer> indexToNode = createIndexToNodeMap(params);
 
         Set<Edge<Integer>> expectedWeights = new HashSet<>();
 
@@ -128,18 +109,13 @@ public class AdjacencyGraphTest extends P3_TestBase {
             Edge<Integer> edgeToAdd = Edge.of(from, to, weight);
             expectedWeights.add(edgeToAdd);
 
-            Context.Builder<?> context = contextBuilder()
-                    .subject("AdjacencyGraph.addNode")
-                    .add("nodes", nodes)
-                    .add("edgeToAdd", edgeToAdd)
-                    .add("nodeToIndex", nodeToIndex.toString())
-                    .add("indexToNode", indexToNode.toString())
-                    .add("previous weights", getWeights(graph).toString())
-                    .add("expected weights", expectedWeights.toString());
+            context.add("edgeToAdd", edgeToAdd);
+            context.add("previous weights", getWeights(graph).toString());
+            context.add("expected weights", expectedWeights.toString());
 
             ArgumentCaptor<Integer> fromCaptor = ArgumentCaptor.forClass(Integer.class);
             ArgumentCaptor<Integer> toCaptor = ArgumentCaptor.forClass(Integer.class);
-            doNothing().when(representation).addEdge(fromCaptor.capture(), toCaptor.capture());
+            doNothing().when(getRepresentation(graph)).addEdge(fromCaptor.capture(), toCaptor.capture());
 
             call(() -> graph.addEdge(edgeToAdd), context, "addEdge should not throw an exception");
 
@@ -181,42 +157,21 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/getEdge.json")
     public void testGetEdge(JsonParameterSet params) throws ReflectiveOperationException {
-        List<Integer> nodes = params.get("nodes");
+        Context.Builder<?> context = createContext(params, "getEdge");
+        AdjacencyGraph<Integer> graph = createGraph(params, context);
+
+        ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
+
         Set<Edge<Integer>> edges = getEdges(params);
-
-        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
-        Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
-
-        TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
-        representation.disableGrow();
-
-        for (Edge<Integer> edge : edges) {
-            representation.addEdge(edge.from(), edge.to());
-        }
-
-        Context.Builder<?> context = contextBuilder()
-                .subject("AdjacencyGraph.getEdge")
-                .add("nodes", nodes)
-                .add("edges", edges);
-
-        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(edges), size -> representation),
-                context, "The constructor should not throw an exception");
-
-        setNodeToIndex(graph, new HashMap<>(nodeToIndex));
-        setIndexToNode(graph, new HashMap<>(indexToNode));
-
-
-        context.add("nodeToIndex", nodeToIndex)
-                .add("indexToNode", indexToNode);
-
+        Map<Integer, Integer> nodeToIndex = getNodeToIndex(graph);
 
         for (int from : nodeToIndex.keySet()) {
             for (int to : nodeToIndex.keySet()) {
                 Edge<Integer> expected = edges.stream().filter(e -> e.from() == from && e.to() == to).findFirst().orElse(null);
 
-                context.add("from", from)
-                        .add("to", to)
-                        .add("expected", expected);
+                context.add("from", from);
+                context.add("to", to);
+                context.add("expected", expected);
 
                 Edge<Integer> actual = callObject(() -> graph.getEdge(from, to), context, "getEdge should not throw an exception");
 
@@ -234,50 +189,25 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/getOutgoingEdges.json")
     public void testGetOutgoingEdges(JsonParameterSet params) throws ReflectiveOperationException {
-        List<Integer> nodes = params.get("nodes");
+        Context.Builder<?> context = createContext(params, "getOutgoingEdges");
+        AdjacencyGraph<Integer> graph = createGraph(params, context);
+
+        ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
+
         Set<Edge<Integer>> edges = getEdges(params);
-
-        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(nodes);
-        Map<Integer, Integer> indexToNode = createIndexToNodeMap(nodes);
-
-        TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
-        representation.disableGrow();
-
-        for (Edge<Integer> edge : edges) {
-            representation.addEdge(edge.from(), edge.to());
-        }
-
-        Context.Builder<?> context = contextBuilder()
-                .subject("AdjacencyGraph.getOutgoingEdges")
-                .add("nodes", nodes)
-                .add("edges", edges);
-
-        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(edges), size -> representation)
-                , context, "The constructor should not throw an exception");
-
-        setNodeToIndex(graph, new HashMap<>(nodeToIndex));
-        setIndexToNode(graph, new HashMap<>(indexToNode));
-
-        context.add("nodeToIndex", nodeToIndex)
-                .add("indexToNode", indexToNode);
+        Map<Integer, Integer> nodeToIndex = getNodeToIndex(graph);
 
         for (int node : nodeToIndex.keySet()) {
             Set<Edge<Integer>> expected = edges.stream().filter(e -> e.from() == node).collect(Collectors.toSet());
 
-            context.add("node", node)
-                    .add("expected", expected);
+            context.add("node", node);
+            context.add("expected", expected);
 
             Set<Edge<Integer>> actual = callObject(() -> graph.getOutgoingEdges(node), context, "getOutgoingEdges should not throw an exception");
 
             context.add("actual", actual);
 
-            assertNotNull(actual, context, "The method should not return null");
-            assertEquals(expected.size(), actual.size(), context, "The returned set does not have the correct size");
-
-            for (Edge<Integer> edge : expected) {
-                assertTrue(actual.contains(edge), context, "The returned set does not contain the expected edge: " + edge);
-                assertEquals(edge.weight(), actual.stream().filter(e -> e.equals(edge)).findFirst().get().weight(), context, "The returned set contains an edge with the correct from and to values but it has a wrong weight");
-            }
+            assertSetEquals(expected, actual, context, "The method did not return the correct value");
         }
     }
 
@@ -287,25 +217,21 @@ public class AdjacencyGraphTest extends P3_TestBase {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = getEdges(params);
 
-        Context.Builder<?> context = contextBuilder()
-                .subject("AdjacencyGraph.constructor")
-                .add("nodes", nodes)
-                .add("edges", edges);
+        Context.Builder<?> context = createContext(params, "constructor");
 
-        TestAdjacencyRepresentation representation = mock(TestAdjacencyRepresentation.class);
-
+        TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
         AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), edges, size -> {
             assertEquals(nodes.size(), size, context, "The representation should be created with the correct size");
             return representation;
-        }), context, "The constructor should not throw an exception");
+        }), context, "constructor");
 
         Map<Integer, Integer> actualNodeToIndex = getNodeToIndex(graph);
         Map<Integer, Integer> actualIndexToNode = getIndexToNode(graph);
         Map<Integer, Map<Integer, Integer>> actualWeights = getWeights(graph);
 
-        context.add("actual nodeToIndex", actualNodeToIndex)
-                .add("actual indexToNode", actualIndexToNode)
-                .add("actual weights", actualWeights);
+        context.add("actual nodeToIndex", actualNodeToIndex);
+        context.add("actual indexToNode", actualIndexToNode);
+        context.add("actual weights", actualWeights);
 
         assertSame(representation, getRepresentation(graph), context, "The representation should be set to the one returned by the factory");
 
@@ -323,6 +249,35 @@ public class AdjacencyGraphTest extends P3_TestBase {
         assertWeightsCorrect(edges, actualWeights, context);
     }
 
+    private AdjacencyGraph<Integer> createGraph(JsonParameterSet params, Context.Builder<?> context) throws ReflectiveOperationException {
+        return createGraph(params, context, false);
+    }
+
+    private AdjacencyGraph<Integer> createGraph(JsonParameterSet params, Context.Builder<?> context, boolean spyRepresentation) throws ReflectiveOperationException {
+        List<Integer> nodes = params.get("nodes");
+        Set<Edge<Integer>> edges = getEdges(params);
+
+        TestAdjacencyRepresentation representation = spyRepresentation ? spy(new TestAdjacencyRepresentation(nodes.size())) : new TestAdjacencyRepresentation(nodes.size());
+
+        for (Edge<Integer> edge : edges) {
+            representation.addEdge(edge.from(), edge.to());
+        }
+
+        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(edges), size -> representation),
+            context, "The constructor should not throw an exception");
+
+        Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(params);
+        Map<Integer, Integer> indexToNode = createIndexToNodeMap(params);
+
+        setNodeToIndex(graph, new HashMap<>(nodeToIndex));
+        setIndexToNode(graph, new HashMap<>(indexToNode));
+
+        context.add("nodeToIndex", nodeToIndex);
+        context.add("indexToNode", indexToNode);
+
+        return graph;
+    }
+
     private void assertWeightsCorrect(Set<Edge<Integer>> expected, Map<Integer, Map<Integer, Integer>> actual, Context.Builder<?> context) {
         for (Edge<Integer> edge : expected) {
             assertTrue(actual.containsKey(edge.from()), context, "weights does not contain key: " + edge.from());
@@ -331,7 +286,8 @@ public class AdjacencyGraphTest extends P3_TestBase {
         }
     }
 
-    private Map<Integer, Integer> createNodeToIndexMap(List<Integer> nodes) {
+    private Map<Integer, Integer> createNodeToIndexMap(JsonParameterSet params) {
+        List<Integer> nodes = params.get("nodes");
         Map<Integer, Integer> nodeMap = new HashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             nodeMap.put(nodes.get(i), i);
@@ -339,7 +295,8 @@ public class AdjacencyGraphTest extends P3_TestBase {
         return nodeMap;
     }
 
-    private Map<Integer, Integer> createIndexToNodeMap(List<Integer> nodes) {
+    private Map<Integer, Integer> createIndexToNodeMap(JsonParameterSet params) {
+        List<Integer> nodes = params.get("nodes");
         Map<Integer, Integer> nodeMap = new HashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             nodeMap.put(i, nodes.get(i));
