@@ -1,6 +1,7 @@
 package p3.graph;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSetTest;
@@ -13,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 import static p3.util.AssertionUtil.assertEquals;
 import static p3.util.AssertionUtil.assertSetEquals;
 import static p3.util.ReflectionUtil.getAdjacencyList;
 import static p3.util.ReflectionUtil.setAdjacencyList;
 
+@TestForSubmission
 public class AdjacencyListTest extends P3_TestBase {
 
     @Override

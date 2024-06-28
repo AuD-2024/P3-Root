@@ -32,7 +32,7 @@ public abstract class P3_TestBase {
 
     public Context.Builder<?> createContext(JsonParameterSet params, String method, Map<String, Object> additionalParams) {
         Context.Builder<?> context = contextBuilder()
-            .subject("%s.%s".formatted(getTestedClassName(), method));
+                .subject("%s.%s".formatted(getTestedClassName(), method));
 
         for (Map.Entry<String, Object> entry : additionalParams.entrySet()) {
             context.add(entry.getKey(), entry.getValue());
@@ -40,16 +40,14 @@ public abstract class P3_TestBase {
 
         for (String param : getOptionalParams()) {
             if (params.availableKeys().contains(param)) {
-                context.add(param, params.get(param));
+                if (param.contains("keys") && params.availableKeys().contains("nodes")) {
+                    context.add(param, createKeysMap(params, param));
+                } else if (param.contains("distances") && params.availableKeys().contains("nodes")) {
+                    context.add(param, createDistanceMap(params, param));
+                } else {
+                    context.add(param, params.get(param));
+                }
             }
-        }
-
-        if (params.availableKeys().contains("edges")) {
-            context.add("gui string",
-                params.<List<Integer>>get("nodes").stream().map(Object::toString).collect(Collectors.joining(",")) + "/" +
-                getEdges(params).stream()
-                    .map(e -> "%s,%s,%s".formatted(e.from(), e.to(), e.weight()))
-                    .collect(Collectors.joining(";")));
         }
 
         return context;
@@ -117,7 +115,7 @@ public abstract class P3_TestBase {
 
     public static <T> Map<Integer, T> mapToNodeMap(JsonParameterSet params, String mapKey, Function<Object, T> valueMapper) {
         return params.<Map<String, Object>>get(mapKey).entrySet().stream()
-            .collect(Collectors.toMap(e -> Integer.parseInt(e.getKey()), e -> valueMapper.apply(e.getValue())));
+                .collect(Collectors.toMap(e -> Integer.parseInt(e.getKey()), e -> valueMapper.apply(e.getValue())));
     }
 
     public static Map<Integer, Integer> createPredecessorMap(JsonParameterSet params, String valuesKey) {

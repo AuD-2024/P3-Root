@@ -1,6 +1,7 @@
 package p3.solver;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Assertions2;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.json.JsonParameterSet;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static p3.util.AssertionUtil.assertListEquals;
 import static p3.util.ReflectionUtil.setDFS;
 
+@TestForSubmission
 public class TopologicalSortTest extends P3_TestBase {
 
     @Override
@@ -32,7 +34,7 @@ public class TopologicalSortTest extends P3_TestBase {
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "topologicalSort/sortNonCyclic.json")
+    @JsonParameterSetTest(value = "topologicalsort/sortNonCyclic.json")
     public void testSortNonCyclic(JsonParameterSet params) throws ReflectiveOperationException {
         TopologicalSort<Integer> topologicalSort = createTopologicalSort(params);
         Context.Builder<?> context = createContext(params, "sort");
@@ -45,7 +47,7 @@ public class TopologicalSortTest extends P3_TestBase {
     }
 
     @ParameterizedTest
-    @JsonParameterSetTest(value = "topologicalSort/sortCyclic.json")
+    @JsonParameterSetTest(value = "topologicalsort/sortCyclic.json")
     public void testSortCyclic(JsonParameterSet params) throws ReflectiveOperationException {
         TopologicalSort<Integer> topologicalSort = createTopologicalSort(params);
         Context.Builder<?> context = createContext(params, "sort");

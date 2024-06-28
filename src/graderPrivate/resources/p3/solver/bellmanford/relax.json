@@ -62,6 +62,21 @@
     "distances": [10, null, 30, 40],
     "expectedPredecessors": [0, null, 1, 2],
     "expectedDistances": [10, null, 30, 40]
+  },
+  {
+    "nodes": [0,1,2,3],
+    "edges": [
+      [0,1,0,2],
+      [0,3,4,0],
+      [5,6,7,8],
+      [0,0,0,0]
+    ],
+    "from": 1,
+    "to": 2,
+    "weight": 10,
+    "predecessors": [0, null, null, 2],
+    "distances": [10, null, null, 40],
+    "expectedPredecessors": [0, null, null, 2],
+    "expectedDistances": [10, null, null, 40]
   }
-
 ]

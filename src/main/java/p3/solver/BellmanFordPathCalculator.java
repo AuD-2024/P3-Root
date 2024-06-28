@@ -50,7 +50,6 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
     @Override
     public List<N> calculatePath(N start, N end) {
         initSSSP(start);
-
         processGraph();
 
         if (hasNegativeCycle()) {
