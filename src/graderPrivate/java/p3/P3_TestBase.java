@@ -40,10 +40,12 @@ public abstract class P3_TestBase {
 
         for (String param : getOptionalParams()) {
             if (params.availableKeys().contains(param)) {
-                if (param.contains("keys") && params.availableKeys().contains("nodes")) {
+                if (param.toLowerCase().contains("keys") && params.availableKeys().contains("nodes")) {
                     context.add(param, createKeysMap(params, param));
-                } else if (param.contains("distances") && params.availableKeys().contains("nodes")) {
+                } else if (param.toLowerCase().contains("distances") && params.availableKeys().contains("nodes")) {
                     context.add(param, createDistanceMap(params, param));
+                } else if (param.equals("edges") && params.availableKeys().contains("nodes")) {
+                    context.add("edges[from-(weight)->to]", getEdges(params).stream().map(e -> "[%s-(%s)->%s]".formatted(e.from(), e.weight(), e.to())).toList());
                 } else {
                     context.add(param, params.get(param));
                 }
