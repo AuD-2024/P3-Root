@@ -129,8 +129,8 @@ public class AdjacencyGraphTest extends P3_TestBase {
             assertWeightsCorrect(expectedWeights, actualWeights, context);
 
             assertEquals(1, toCaptor.getAllValues().size(), context, "representation.addEdge should be called exactly once");
-            assertEquals(from, fromCaptor.getValue(), context, "representation.addEdge has not been called with the correct from value");
-            assertEquals(to, toCaptor.getValue(), context, "representation.addEdge has not been called with the correct to value");
+            assertEquals(nodeToIndex.get(from), fromCaptor.getValue(), context, "representation.addEdge has not been called with the correct from value");
+            assertEquals(nodeToIndex.get(to), toCaptor.getValue(), context, "representation.addEdge has not been called with the correct to value");
 
             fromCaptor.getAllValues().clear();
             toCaptor.getAllValues().clear();
@@ -160,7 +160,6 @@ public class AdjacencyGraphTest extends P3_TestBase {
     public void testGetEdge(JsonParameterSet params) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getEdge");
         AdjacencyGraph<Integer> graph = createGraph(params, context);
-        overrideWeights(params, graph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -193,7 +192,6 @@ public class AdjacencyGraphTest extends P3_TestBase {
     public void testGetOutgoingEdges(JsonParameterSet params) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getOutgoingEdges");
         AdjacencyGraph<Integer> graph = createGraph(params, context);
-        overrideWeights(params, graph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -256,24 +254,30 @@ public class AdjacencyGraphTest extends P3_TestBase {
         return createGraph(params, context, false);
     }
 
-    private AdjacencyGraph<Integer> createGraph(JsonParameterSet params, Context.Builder<?> context, boolean spyRepresentation) throws ReflectiveOperationException {
+    private AdjacencyGraph<Integer> createGraph(JsonParameterSet params,
+                                                Context.Builder<?> context,
+                                                boolean spyRepresentation) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = getEdges(params);
-
-        TestAdjacencyRepresentation representation = spyRepresentation ? spy(new TestAdjacencyRepresentation(nodes.size())) : new TestAdjacencyRepresentation(nodes.size());
-
-        for (Edge<Integer> edge : edges) {
-            representation.addEdge(edge.from(), edge.to());
-        }
-
-        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(edges), size -> representation),
-            context, "The constructor should not throw an exception");
 
         Map<Integer, Integer> nodeToIndex = createNodeToIndexMap(params);
         Map<Integer, Integer> indexToNode = createIndexToNodeMap(params);
 
+        TestAdjacencyRepresentation representation = spyRepresentation ? spy(new TestAdjacencyRepresentation(nodes.size())) : new TestAdjacencyRepresentation(nodes.size());
+
+        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(), size -> representation),
+            context, "constructor");
+
         setNodeToIndex(graph, new HashMap<>(nodeToIndex));
         setIndexToNode(graph, new HashMap<>(indexToNode));
+
+        for (Edge<Integer> edge : edges) {
+            representation.addEdge(nodeToIndex.get(edge.from()), nodeToIndex.get(edge.to()));
+        }
+
+        if (!edges.isEmpty()) {
+            overrideWeights(params, graph);
+        }
 
         context.add("nodeToIndex", nodeToIndex);
         context.add("indexToNode", indexToNode);
