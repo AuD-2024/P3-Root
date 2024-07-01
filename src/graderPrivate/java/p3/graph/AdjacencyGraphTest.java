@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -115,7 +115,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
 
             ArgumentCaptor<Integer> fromCaptor = ArgumentCaptor.forClass(Integer.class);
             ArgumentCaptor<Integer> toCaptor = ArgumentCaptor.forClass(Integer.class);
-            doNothing().when(getRepresentation(graph)).addEdge(fromCaptor.capture(), toCaptor.capture());
+            doCallRealMethod().when(getRepresentation(graph)).addEdge(fromCaptor.capture(), toCaptor.capture());
 
             call(() -> graph.addEdge(edgeToAdd), context, "addEdge should not throw an exception");
 
