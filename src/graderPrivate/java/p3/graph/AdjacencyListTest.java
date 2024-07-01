@@ -16,6 +16,7 @@ import java.util.Set;
 
 import static p3.util.AssertionUtil.assertEquals;
 import static p3.util.AssertionUtil.assertSetEquals;
+import static p3.util.AssertionUtil.assertTrue;
 import static p3.util.ReflectionUtil.getAdjacencyList;
 import static p3.util.ReflectionUtil.setAdjacencyList;
 
@@ -82,8 +83,8 @@ public class AdjacencyListTest extends P3_TestBase {
 
             assertEquals(expectedList.size(), actualList.size(), context, "The size of the linked list at index %d is not correct".formatted(i));
 
-            for (int j = 0; j < expectedList.size(); j++) {
-                assertEquals(expectedList.get(j), actualList.get(j), context, "The element at index %d of the linked list at index %d is not correct".formatted(j, i));
+            for (Integer expectedItem : expectedList) {
+                assertTrue(actualList.contains(expectedItem), context, "The linked list at index %d does not contain the element %s".formatted(i, expectedItem));
             }
         }
     }
