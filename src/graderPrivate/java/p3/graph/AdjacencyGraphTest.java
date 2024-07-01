@@ -31,6 +31,7 @@ import static p3.util.ReflectionUtil.getRepresentation;
 import static p3.util.ReflectionUtil.getWeights;
 import static p3.util.ReflectionUtil.setIndexToNode;
 import static p3.util.ReflectionUtil.setNodeToIndex;
+import static p3.util.ReflectionUtil.setWeights;
 
 @TestForSubmission
 public class AdjacencyGraphTest extends P3_TestBase {
@@ -159,6 +160,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
     public void testGetEdge(JsonParameterSet params) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getEdge");
         AdjacencyGraph<Integer> graph = createGraph(params, context);
+        overrideWeights(params, graph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -191,6 +193,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
     public void testGetOutgoingEdges(JsonParameterSet params) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getOutgoingEdges");
         AdjacencyGraph<Integer> graph = createGraph(params, context);
+        overrideWeights(params, graph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -302,6 +305,20 @@ public class AdjacencyGraphTest extends P3_TestBase {
             nodeMap.put(i, nodes.get(i));
         }
         return nodeMap;
+    }
+
+    private void overrideWeights(JsonParameterSet params, AdjacencyGraph<Integer> graph) throws ReflectiveOperationException {
+        Map<Integer, Map<Integer, Integer>> weights = new HashMap<>();
+
+        for (Integer node : params.<List<Integer>>get("nodes")) {
+            weights.put(node, new HashMap<>());
+        }
+
+        for (Edge<Integer> edge : getEdges(params)) {
+            weights.get(edge.from()).put(edge.to(), edge.weight());
+        }
+
+        setWeights(graph, weights);
     }
 
 }
