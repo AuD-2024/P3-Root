@@ -44,8 +44,8 @@ public abstract class P3_TestBase {
                     context.add(param, createKeysMap(params, param));
                 } else if (param.toLowerCase().contains("distances") && params.availableKeys().contains("nodes")) {
                     context.add(param, createDistanceMap(params, param));
-                } else if (param.equals("edges") && params.availableKeys().contains("nodes")) {
-                    context.add("edges[from-(weight)->to]", getEdges(params).stream().map(e -> "[%s-(%s)->%s]".formatted(e.from(), e.weight(), e.to())).toList());
+                } else if ((param.equals("edges") || param.equals("expectedEdges"))  && params.availableKeys().contains("nodes")) {
+                    context.add(param + "[from-(weight)->to]", edgesToString(getEdges(params, param)));
                 } else {
                     context.add(param, params.get(param));
                 }
@@ -61,6 +61,10 @@ public abstract class P3_TestBase {
         }
 
         return context;
+    }
+
+    public String edgesToString(Set<Edge<Integer>> edges) {
+        return edges.stream().map(e -> "[%s-(%s)->%s]".formatted(e.from(), e.weight(), e.to())).toList().toString();
     }
 
     public void call(Callable callable, Context.Builder<?> context, String name) {

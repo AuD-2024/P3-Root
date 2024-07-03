@@ -151,6 +151,8 @@ public class PrimCalculatorTest extends P3_TestBase {
 
         Set<Edge<Integer>> actual = callObject(calculator::calculateMSTEdges, context, "calculateMSTEdges");
 
+        context.add("actual edges[from-(weight)->to]", edgesToString(actual));
+
         assertSetEquals(getEdges(params, "expectedEdges"), actual, context, "returned");
     }
 
