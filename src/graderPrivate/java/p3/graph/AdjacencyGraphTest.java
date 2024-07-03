@@ -208,7 +208,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
 
             context.add("actual", actual);
 
-            assertSetEquals(expected, actual, context, "The method did not return the correct value");
+            assertSetEquals(expected, actual, context, "returned");
         }
     }
 
