@@ -146,7 +146,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
             context.add("previous weights", actualWeights.toString());
             context.add("expected weights", expectedWeights.toString());
 
-            call(() -> graph.addEdge(updatedEdge), context, "addEdge should not throw an exception when called a second time with the same edge but different weight");
+            call(() -> graph.addEdge(updatedEdge), context, "addEdge");
 
             actualWeights = getWeights(graph);
             context.add("actual weights", actualWeights.toString());
@@ -174,7 +174,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
                 context.add("to", to);
                 context.add("expected", expected);
 
-                Edge<Integer> actual = callObject(() -> graph.getEdge(from, to), context, "getEdge should not throw an exception");
+                Edge<Integer> actual = callObject(() -> graph.getEdge(from, to), context, "getEdge");
 
                 context.add("actual", actual);
 
@@ -204,7 +204,7 @@ public class AdjacencyGraphTest extends P3_TestBase {
             context.add("node", node);
             context.add("expected", expected);
 
-            Set<Edge<Integer>> actual = callObject(() -> graph.getOutgoingEdges(node), context, "getOutgoingEdges should not throw an exception");
+            Set<Edge<Integer>> actual = callObject(() -> graph.getOutgoingEdges(node), context, "getOutgoingEdges");
 
             context.add("actual", actual);
 
