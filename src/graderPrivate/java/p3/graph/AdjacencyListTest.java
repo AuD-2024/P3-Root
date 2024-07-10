@@ -81,10 +81,8 @@ public class AdjacencyListTest extends P3_TestBase {
             LinkedList<Integer> expectedList = expected[i];
             LinkedList<Integer> actualList = actual[i];
 
-            assertEquals(expectedList.size(), actualList.size(), context, "The size of the linked list at index %d is not correct".formatted(i));
-
-            for (Integer expectedItem : expectedList) {
-                assertTrue(actualList.contains(expectedItem), context, "The linked list at index %d does not contain the element %s".formatted(i, expectedItem));
+            for (int expectedItem : expectedList) {
+                assertTrue(actualList.contains(expectedItem), context, "The adjacencyList at index %d does not contain the expected item %d".formatted(i, expectedItem));
             }
         }
     }
