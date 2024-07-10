@@ -119,7 +119,7 @@ public class P3_RubricProvider implements RubricProvider {
 
     public static final Criterion H2_3 = createParentCriterion("2 c)", "Topologische Sortierung", H2_3_1);
 
-    public static final Criterion H2 = createParentCriterion("2", "Deapth-First-Search + Topologische Sortierung", H2_1, H2_2, H2_3);
+    public static final Criterion H2 = createParentCriterion("2", "Depth-First-Search + Topologische Sortierung", H2_1, H2_2, H2_3);
 
     public static final Criterion H3_1 = createCriterion("Die Methode [[[initSSSP]]] der Klasse [[[BellmanFordPathCalculator]]] funktioniert vollständig korrekt", 1,
             () -> BellmanFordCalculatorTest.class.getMethod("testInitSSSP", JsonParameterSet.class));
@@ -131,7 +131,8 @@ public class P3_RubricProvider implements RubricProvider {
             () -> BellmanFordCalculatorTest.class.getMethod("testProcessGraph", JsonParameterSet.class));
 
     public static final Criterion H3_4 = createCriterion("Die Methode [[[hasNegativeCycle]]] der Klasse [[[BellmanFordPathCalculator]]] funktioniert vollständig korrekt", 1,
-            () -> BellmanFordCalculatorTest.class.getMethod("testHasNegativeCycle", JsonParameterSet.class));
+            JUnitTestRef.or(JUnitTestRef.ofMethod(() -> BellmanFordCalculatorTest.class.getMethod("testHasNegativeCycle", JsonParameterSet.class)),
+                    JUnitTestRef.ofMethod(() -> BellmanFordCalculatorTest.class.getMethod("testHasNegativeCycleAlt", JsonParameterSet.class))));
 
     public static final Criterion H3_5 = createCriterion("Die Methode [[[calculatePath]]] der Klasse [[[BellmanFordPathCalculator]]] funktioniert vollständig korrekt", 1,
             () -> BellmanFordCalculatorTest.class.getMethod("testCalculatePath", JsonParameterSet.class));

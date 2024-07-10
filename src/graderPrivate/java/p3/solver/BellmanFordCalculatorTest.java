@@ -106,6 +106,18 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "bellmanford/hasNegativeCycle.json")
     public void testHasNegativeCycle(JsonParameterSet params) throws ReflectiveOperationException {
+        testHasNegativeCycle(params, false);
+    }
+
+    // inverted test for hasNegativeCycle that tests if it always returns the inverted value. Correct implementations
+    // should fail this test and pass the normal test, however inverted implementations are also accepted.
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "bellmanford/hasNegativeCycle.json")
+    public void testHasNegativeCycleAlt(JsonParameterSet params) throws ReflectiveOperationException {
+        testHasNegativeCycle(params, true);
+    }
+
+    private void testHasNegativeCycle(JsonParameterSet params, boolean invert) throws ReflectiveOperationException {
         BellmanFordPathCalculator<Integer> calculator = createCalculator(params, true);
         Context.Builder<?> context = createContext(params, "checkNegativeCycles");
 
@@ -113,7 +125,12 @@ public class BellmanFordCalculatorTest extends P3_TestBase {
 
         context.add("actual", actual);
 
-        assertEquals(params.getBoolean("expected"), actual, context, "hasNegativeCycle did not return the correct value");
+        boolean expected = params.getBoolean("expected");
+        if (invert) {
+            expected = !expected;
+        }
+
+        assertEquals(expected, actual, context, "hasNegativeCycle did not return the correct value");
     }
 
     @ParameterizedTest
