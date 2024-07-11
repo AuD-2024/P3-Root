@@ -47,6 +47,10 @@ public class ReflectionUtil {
         return getField(graph, "indexToNode");
     }
 
+    public static void setAdjacencyRepresentation(AdjacencyGraph<Integer> graph, AdjacencyRepresentation representation) throws ReflectiveOperationException {
+        setField(graph, "representation", representation);
+    }
+
     public static void setWeights(AdjacencyGraph<Integer> graph, Map<Integer, Map<Integer, Integer>> weights) throws ReflectiveOperationException {
         setField(graph, "weights", weights);
     }

@@ -76,19 +76,31 @@ public class P3_RubricProvider implements RubricProvider {
     public static final Criterion H1_2 = createParentCriterion("1 b)", "AdjacencyList", H1_2_1, H1_2_2);
 
     public static final Criterion H1_3_1 = createCriterion("Die Methode [[[addNode]]] der Klasse [[[AdjacencyGraph]]] funktioniert vollständig korrekt", 1,
-            () -> AdjacencyGraphTest.class.getMethod("testAddNode", JsonParameterSet.class));
+            JUnitTestRef.or(
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testAddNode", JsonParameterSet.class)),
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testAddNodeWithoutConstructor", JsonParameterSet.class))
+            ));
 
     public static final Criterion H1_3_2 = createCriterion("Die Methode [[[addEdge]]] der Klasse [[[AdjacencyGraph]]] funktioniert vollständig korrekt", 1,
-            () -> AdjacencyGraphTest.class.getMethod("testAddEdge", JsonParameterSet.class));
+            JUnitTestRef.or(
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testAddEdge", JsonParameterSet.class)),
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testAddEdgeWithoutConstructor", JsonParameterSet.class))
+            ));
 
     public static final Criterion H1_3_3 = createCriterion("Die Methode [[[getEdge]]] der Klasse [[[AdjacencyGraph]]] funktioniert vollständig korrekt", 1,
-            () -> AdjacencyGraphTest.class.getMethod("testGetEdge", JsonParameterSet.class));
+            JUnitTestRef.or(
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testGetEdge", JsonParameterSet.class)),
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testGetEdgeWithoutConstructor", JsonParameterSet.class))
+            ));
 
     public static final Criterion H1_3_4 = createCriterion("Der Konstruktor der Klasse [[[AdjacencyGraph]]] funktioniert vollständig korrekt", 1,
             () -> AdjacencyGraphTest.class.getMethod("testConstructor", JsonParameterSet.class));
 
     public static final Criterion H1_3_5 = createCriterion("Die Methode [[[getOutgoingEdges]]] der Klasse [[[AdjacencyGraph]]] funktioniert vollständig korrekt", 2,
-            () -> AdjacencyGraphTest.class.getMethod("testGetOutgoingEdges", JsonParameterSet.class));
+            JUnitTestRef.or(
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testGetOutgoingEdges", JsonParameterSet.class)),
+                JUnitTestRef.ofMethod(() -> AdjacencyGraphTest.class.getMethod("testGetOutgoingEdgesWithoutConstructor", JsonParameterSet.class))
+            ));
 
     public static final Criterion H1_3 = createParentCriterion("1 c)", "AdjacencyGraph", H1_3_1, H1_3_2, H1_3_3, H1_3_4, H1_3_5);
 

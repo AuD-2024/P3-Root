@@ -16,7 +16,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -29,9 +32,14 @@ import static p3.util.ReflectionUtil.getIndexToNode;
 import static p3.util.ReflectionUtil.getNodeToIndex;
 import static p3.util.ReflectionUtil.getRepresentation;
 import static p3.util.ReflectionUtil.getWeights;
+import static p3.util.ReflectionUtil.setAdjacencyRepresentation;
 import static p3.util.ReflectionUtil.setIndexToNode;
 import static p3.util.ReflectionUtil.setNodeToIndex;
 import static p3.util.ReflectionUtil.setWeights;
+
+// The *WithoutConstructor tests are alternative tests that attempt to test the method without invoking the constructor
+// in case the constructor throws an exception or is otherwise not implemented correctly. However, they might break
+// additional helper methods/invariants that are added by the students.
 
 @TestForSubmission
 public class AdjacencyGraphTest extends P3_TestBase {
@@ -49,8 +57,18 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/addNode.json")
     public void testAddNode(JsonParameterSet params) throws ReflectiveOperationException {
+        testAddNode(params, false);
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "adjacencygraph/addNode.json")
+    public void testAddNodeWithoutConstructor(JsonParameterSet params) throws ReflectiveOperationException {
+        testAddNode(params, true);
+    }
+
+    private void testAddNode(JsonParameterSet params, boolean mockGraph) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "addNode");
-        AdjacencyGraph<Integer> graph = createGraph(params, context, true);
+        AdjacencyGraph<Integer> graph = createGraph(params, context, true, mockGraph);
 
         TestAdjacencyRepresentation representation = (TestAdjacencyRepresentation) getRepresentation(graph);
         representation.disableAddEdge();
@@ -87,8 +105,18 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/addEdge.json")
     public void testAddEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        testAddEdge(params, false);
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "adjacencygraph/addEdge.json")
+    public void testAddEdgeWithoutConstructor(JsonParameterSet params) throws ReflectiveOperationException {
+        testAddEdge(params, true);
+    }
+
+    private void testAddEdge(JsonParameterSet params, boolean mockGraph) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "addEdge");
-        AdjacencyGraph<Integer> graph = createGraph(params, context, true);
+        AdjacencyGraph<Integer> graph = createGraph(params, context, true, mockGraph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -158,8 +186,18 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/getEdge.json")
     public void testGetEdge(JsonParameterSet params) throws ReflectiveOperationException {
+        testGetEdge(params, false);
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "adjacencygraph/getEdge.json")
+    public void testGetEdgeWithoutConstructor(JsonParameterSet params) throws ReflectiveOperationException {
+        testGetEdge(params, true);
+    }
+
+    private void testGetEdge(JsonParameterSet params, boolean mockGraph) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getEdge");
-        AdjacencyGraph<Integer> graph = createGraph(params, context);
+        AdjacencyGraph<Integer> graph = createGraph(params, context, false, mockGraph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -190,8 +228,18 @@ public class AdjacencyGraphTest extends P3_TestBase {
     @ParameterizedTest
     @JsonParameterSetTest(value = "adjacencygraph/getOutgoingEdges.json")
     public void testGetOutgoingEdges(JsonParameterSet params) throws ReflectiveOperationException {
+        testGetOutgoingEdges(params, false);
+    }
+
+    @ParameterizedTest
+    @JsonParameterSetTest(value = "adjacencygraph/getOutgoingEdges.json")
+    public void testGetOutgoingEdgesWithoutConstructor(JsonParameterSet params) throws ReflectiveOperationException {
+        testGetOutgoingEdges(params, true);
+    }
+
+    private void testGetOutgoingEdges(JsonParameterSet params, boolean mockGraph) throws ReflectiveOperationException {
         Context.Builder<?> context = createContext(params, "getOutgoingEdges");
-        AdjacencyGraph<Integer> graph = createGraph(params, context);
+        AdjacencyGraph<Integer> graph = createGraph(params, context, false, mockGraph);
 
         ((TestAdjacencyRepresentation) getRepresentation(graph)).disableGrow();
 
@@ -250,13 +298,11 @@ public class AdjacencyGraphTest extends P3_TestBase {
         assertWeightsCorrect(edges, actualWeights, context);
     }
 
-    private AdjacencyGraph<Integer> createGraph(JsonParameterSet params, Context.Builder<?> context) throws ReflectiveOperationException {
-        return createGraph(params, context, false);
-    }
-
+    @SuppressWarnings("unchecked")
     private AdjacencyGraph<Integer> createGraph(JsonParameterSet params,
                                                 Context.Builder<?> context,
-                                                boolean spyRepresentation) throws ReflectiveOperationException {
+                                                boolean spyRepresentation,
+                                                boolean mockGraph) throws ReflectiveOperationException {
         List<Integer> nodes = params.get("nodes");
         Set<Edge<Integer>> edges = getEdges(params);
 
@@ -265,8 +311,30 @@ public class AdjacencyGraphTest extends P3_TestBase {
 
         TestAdjacencyRepresentation representation = spyRepresentation ? spy(new TestAdjacencyRepresentation(nodes.size())) : new TestAdjacencyRepresentation(nodes.size());
 
-        AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(), size -> representation),
-            context, "constructor");
+        AdjacencyGraph<Integer> graph;
+
+        if (mockGraph) {
+            graph = mock(AdjacencyGraph.class);
+
+            setAdjacencyRepresentation(graph, representation);
+            setWeights(graph, new HashMap<>());
+
+            doCallRealMethod().when(graph).addNode(anyInt());
+            doCallRealMethod().when(graph).addEdge(anyInt(), anyInt(), anyInt());
+            doCallRealMethod().when(graph).addEdge(any());
+            doCallRealMethod().when(graph).addNodesAndEdge(anyInt(), anyInt(), anyInt());
+            doCallRealMethod().when(graph).getEdge(anyInt(), anyInt());
+            doCallRealMethod().when(graph).getOutgoingEdges(anyInt());
+            doCallRealMethod().when(graph).getIngoingEdges(anyInt());
+            doCallRealMethod().when(graph).getEdges();
+            doCallRealMethod().when(graph).getNodes();
+            doCallRealMethod().when(graph).getAdjacentNodes(anyInt());
+            doCallRealMethod().when(graph).getAllAdjacentEdges(anyInt());
+
+        } else {
+            graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), new HashSet<>(), size -> representation),
+                context, "constructor");
+        }
 
         setNodeToIndex(graph, new HashMap<>(nodeToIndex));
         setIndexToNode(graph, new HashMap<>(indexToNode));
