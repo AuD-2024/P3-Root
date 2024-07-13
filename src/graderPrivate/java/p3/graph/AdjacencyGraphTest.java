@@ -269,6 +269,8 @@ public class AdjacencyGraphTest extends P3_TestBase {
         Context.Builder<?> context = createContext(params, "constructor");
 
         TestAdjacencyRepresentation representation = spy(new TestAdjacencyRepresentation(nodes.size()));
+        representation.disableGrow();
+
         AdjacencyGraph<Integer> graph = callObject(() -> new AdjacencyGraph<>(new HashSet<>(nodes), edges, size -> {
             assertEquals(nodes.size(), size, context, "The representation should be created with the correct size");
             return representation;
